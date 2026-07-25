@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/theme/app_theme.dart';
 
 class ChatBubble extends StatefulWidget {
@@ -54,24 +55,38 @@ class _ChatBubbleState extends State<ChatBubble> {
             ),
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
+                maxWidth: widget.isUser 
+                    ? MediaQuery.of(context).size.width * 0.75
+                    : MediaQuery.of(context).size.width * 0.95,
               ),
-              padding: const EdgeInsets.all(12.0),
-              decoration: BoxDecoration(
+              padding: EdgeInsets.all(widget.isUser ? 12.0 : 4.0),
+              decoration: widget.isUser ? BoxDecoration(
                 color: AppColors.cardBackground,
                 border: Border.all(color: AppColors.border, width: 1.0),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(widget.isUser ? 16 : 4),
-                  topRight: Radius.circular(widget.isUser ? 4 : 16),
-                  bottomLeft: const Radius.circular(16),
-                  bottomRight: const Radius.circular(16),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(4),
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
                 ),
-              ),
-              child: Text(
-                widget.message,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: AppColors.textPrimary,
+              ) : null,
+              child: MarkdownBody(
+                data: widget.message,
+                styleSheet: MarkdownStyleSheet(
+                  p: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textPrimary,
+                  ),
+                  code: TextStyle(
+                    backgroundColor: AppColors.inputBackground,
+                    color: AppColors.primary,
+                    fontFamily: 'monospace',
+                  ),
+                  codeblockDecoration: BoxDecoration(
+                    color: AppColors.inputBackground,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.border),
+                  ),
                 ),
               ),
             ),

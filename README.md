@@ -16,6 +16,8 @@ By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile c
 - **100% Local & Private:** No cloud servers. All communication happens over your home Wi-Fi.
 - **Real-time Streaming:** Watch the AI generate responses on your phone in real-time, just like on your desktop.
 - **Model Switching:** Easily switch between the models you have installed in LM Studio.
+- **Custom Personalities:** Choose from predefined roles or inject your own custom system prompts.
+- **Rich Markdown:** Code blocks, bolding, and italics are rendered beautifully in the chat.
 - **Local Chat History:** All conversations are saved securely on your device.
 
 ---

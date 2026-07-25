@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
+  static const Color primary = Color(0xFF2D2D2D); // Main active color
   static const Color background = Color(0xFFF5F2ED); // Off-white / paper
   static const Color cardBackground = Color(0xFFFFFFFF); // White cards
   static const Color textPrimary = Color(0xFF2D2D2D); // Dark grey text

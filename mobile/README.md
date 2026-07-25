@@ -1,17 +1,19 @@
-# mobile
+# Maat - Local AI Mobile Client
 
-A new Flutter project.
+This is the mobile client for **Maat (Local LLM Mobile Companion)**, built with Flutter.
+It acts as the frontend interface for chatting securely with your locally hosted Large Language Models (via LM Studio) from anywhere on your home network.
+
+## Project Structure
+
+- `lib/`
+  - `screens/`: UI screens (Splash, Personality, QR Connection, Chat, Settings).
+  - `theme/`: App-wide theming and color definitions (Material 3).
+  - `widgets/`: Reusable UI components (ChatBubble, PersonalityCard, SettingsRow).
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. Ensure the Python Gateway is running on your PC.
+2. Run this Flutter app on your physical device or emulator.
+3. Scan the QR code presented by the Gateway to pair your device.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+For full architecture and backend setup instructions, please see the [main project README](../README.md).

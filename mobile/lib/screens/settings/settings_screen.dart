@@ -1,94 +1,160 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/widgets/settings_row.dart';
+import 'package:mobile/providers/app_providers.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 24, top: 60, bottom: 24),
-              child: Text(
-                'Settings',
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Settings',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: FutureBuilder<String?>(
+        future: ref.read(storageServiceProvider)?.getServerUrl(),
+        builder: (context, snapshot) {
+          final serverUrl = snapshot.data ?? 'Not connected';
+          return ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            children: [
+              const Text(
+                'Connection',
                 style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 1.2,
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
+              const SizedBox(height: 16),
+              Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: AppColors.cardShadow,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  children: [
+                    SettingsRow(
+                      icon: Icons.qr_code_scanner,
+                      title: 'QR Connection',
+                      subtitle: serverUrl,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/qr_connection');
+                      },
+                    ),
+                    const Divider(height: 1, color: AppColors.border),
+                    SettingsRow(
+                      icon: Icons.face,
+                      title: 'AI Personality',
+                      subtitle: 'Change how Maat acts',
+                      onTap: () {
+                        Navigator.pushNamed(context, '/personality');
+                      },
+                    ),
+                    const Divider(height: 1, color: AppColors.border),
+                    SettingsRow(
+                      icon: Icons.link_off,
+                      title: 'Disconnect',
+                      subtitle: 'Remove pairing from this device',
+                      isDestructive: true,
+                      onTap: () async {
+                        await ref.read(storageServiceProvider)?.clearAll();
+                        ref.read(connectionStateProvider.notifier).setConnected(false);
+                        if (context.mounted) {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/personality',
+                            (route) => false,
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
-                child: Material(
-                  color: AppColors.cardBackground,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: AppColors.border, width: 1),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SettingsRow(title: 'QR Connection', onTap: () {}),
-                      SettingsRow(title: 'AI Personality', onTap: () {}),
-                      SettingsRow(title: 'GitHub', onTap: () {}),
-                      SettingsRow(title: 'About', onTap: () {}),
-                      SettingsRow(
-                        title: 'Version',
-                        onTap: () {},
-                        showDivider: false,
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'App',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 1.2,
                 ),
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.cardBackground,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Column(
+                  children: [
+                    SettingsRow(
+                      icon: Icons.code,
+                      title: 'GitHub',
+                      subtitle: 'View source code',
+                      onTap: () async {
+                        final uri = Uri.parse('https://github.com/adarsh832/Matt.git');
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri);
+                        }
+                      },
+                    ),
+                    const Divider(height: 1, color: AppColors.border),
+                    SettingsRow(
+                      icon: Icons.info_outline,
+                      title: 'About',
+                      onTap: () {
+                        showAboutDialog(
+                          context: context,
+                          applicationName: 'Maat AI',
+                          applicationVersion: '1.0.0',
+                          applicationIcon: const Icon(Icons.smart_toy, size: 48, color: AppColors.primary),
+                          children: [
+                            const Text(
+                              'Maat is a personal AI assistant built with Flutter and Python. '
+                              'It securely pairs with a local backend to provide private, fast AI completions '
+                              'using LM Studio running on your own hardware.'
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    const Divider(height: 1, color: AppColors.border),
+                    SettingsRow(
+                      icon: Icons.new_releases_outlined,
+                      title: 'Version',
+                      subtitle: '1.0.0',
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
