@@ -74,10 +74,12 @@ flutter run
 
 Here are some screenshots of the mobile UI:
 
-![Screenshot 1](images/Screenshot_20260725_164737.png)
-![Screenshot 2](images/Screenshot_20260725_164801.png)
-![Screenshot 3](images/Screenshot_20260725_164808.png)
-![Screenshot 4](images/Screenshot_20260725_164814.png)
+<div style="display:flex; flex-wrap:wrap; gap:10px;">
+  <img src="images/Screenshot_20260725_164737.png" alt="Screenshot 1" width="200"/>
+  <img src="images/Screenshot_20260725_164801.png" alt="Screenshot 2" width="200"/>
+  <img src="images/Screenshot_20260725_164808.png" alt="Screenshot 3" width="200"/>
+  <img src="images/Screenshot_20260725_164814.png" alt="Screenshot 4" width="200"/>
+</div>
 
 
 ## 🤝 Contributing
