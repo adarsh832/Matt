@@ -3,6 +3,7 @@
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat&logo=Flutter&logoColor=white)](https://flutter.dev/)
 [![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Release](https://img.shields.io/github/v/release/adarsh832/Matt?style=flat&logo=github)](https://github.com/adarsh832/Matt/releases/latest)
 
 **Local LLM Mobile Companion** is a free, open-source mobile application designed to untether you from your desk. It allows you to chat securely with your locally hosted Large Language Models (via LM Studio) from anywhere on your home network using your smartphone.
 
@@ -47,6 +48,11 @@ Local LLM (Qwen, Llama, etc.)
 ---
 
 ## 🚀 Getting Started
+
+### 📦 Download the App
+Don't want to build from source? You can download the latest pre-compiled Android APK directly from the [Releases page](https://github.com/adarsh832/Matt/releases/latest)!
+
+---
 
 ### Prerequisites
 - [LM Studio](https://lmstudio.ai/) installed and running on your PC with the "Local Server" started (default port 1234).
