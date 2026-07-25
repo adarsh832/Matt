@@ -381,7 +381,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 enabled: !isModelLoading,
                 textInputAction: TextInputAction.send,
                 decoration: InputDecoration(
-                  hintText: isModelLoading ? 'Loading model into memory...' : 'Message Maat...',
+                  hintText: isModelLoading ? 'Loading model into memory...' : 'Message Matt...',
                   hintStyle: const TextStyle(
                     color: AppColors.textTertiary,
                     fontSize: 15,

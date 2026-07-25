@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                     SettingsRow(
                       icon: Icons.face,
                       title: 'AI Personality',
-                      subtitle: 'Change how Maat acts',
+                      subtitle: 'Change how Matt acts',
                       onTap: () {
                         Navigator.pushNamed(context, '/personality');
                       },
@@ -117,8 +117,12 @@ class SettingsScreen extends ConsumerWidget {
                       subtitle: 'View source code',
                       onTap: () async {
                         final uri = Uri.parse('https://github.com/adarsh832/Matt.git');
-                        if (await canLaunchUrl(uri)) {
-                          await launchUrl(uri);
+                        try {
+                          if (await canLaunchUrl(uri)) {
+                            await launchUrl(uri, mode: LaunchMode.externalApplication);
+                          }
+                        } catch (e) {
+                          debugPrint('Could not launch $uri: $e');
                         }
                       },
                     ),
@@ -129,12 +133,12 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () {
                         showAboutDialog(
                           context: context,
-                          applicationName: 'Maat AI',
+                          applicationName: 'Matt AI',
                           applicationVersion: '1.0.0',
                           applicationIcon: const Icon(Icons.smart_toy, size: 48, color: AppColors.primary),
                           children: [
                             const Text(
-                              'Maat is a personal AI assistant built with Flutter and Python. '
+                              'Matt is a personal AI assistant built with Flutter and Python. '
                               'It securely pairs with a local backend to provide private, fast AI completions '
                               'using LM Studio running on your own hardware.'
                             ),

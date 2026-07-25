@@ -39,7 +39,7 @@ class AppTheme {
         centerTitle: true,
       ),
       textTheme: const TextTheme(
-        // "Maat" splash title - large italic serif
+        // "Matt" splash title - large italic serif
         displayLarge: TextStyle(
           fontFamily: 'Serif',
           fontSize: 48,
@@ -67,7 +67,7 @@ class AppTheme {
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
-        // "Maat" in chat app bar
+        // "Matt" in chat app bar
         titleLarge: TextStyle(
           fontFamily: 'Serif',
           fontSize: 22,

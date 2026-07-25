@@ -18,11 +18,11 @@ void main() {
       statusBarBrightness: Brightness.light,
     ),
   );
-  runApp(const ProviderScope(child: MaatApp()));
+  runApp(const ProviderScope(child: MattApp()));
 }
 
-class MaatApp extends ConsumerWidget {
-  const MaatApp({super.key});
+class MattApp extends ConsumerWidget {
+  const MattApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,7 +39,7 @@ class MaatApp extends ConsumerWidget {
     }
 
     return MaterialApp(
-      title: 'Maat - Local AI',
+      title: 'Matt - Local AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: '/',

@@ -1,6 +1,6 @@
-# Maat - Local AI Mobile Client
+# Matt - Local AI Mobile Client
 
-This is the mobile client for **Maat (Local LLM Mobile Companion)**, built with Flutter.
+This is the mobile client for **Matt (Local LLM Mobile Companion)**, built with Flutter.
 It acts as the frontend interface for chatting securely with your locally hosted Large Language Models (via LM Studio) from anywhere on your home network.
 
 ## Project Structure
