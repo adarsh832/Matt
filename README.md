@@ -70,6 +70,16 @@ flutter run
 
 ---
 
+## 📱 UI Screenshots
+
+Here are some screenshots of the mobile UI:
+
+![Screenshot 1](images/Screenshot_20260725_164737.png)
+![Screenshot 2](images/Screenshot_20260725_164801.png)
+![Screenshot 3](images/Screenshot_20260725_164808.png)
+![Screenshot 4](images/Screenshot_20260725_164814.png)
+
+
 ## 🤝 Contributing
 
 We are building this project in public and are actively looking for contributors! Whether you are a student looking for resume experience, a Flutter guru, or a Python developer, we want your help.
