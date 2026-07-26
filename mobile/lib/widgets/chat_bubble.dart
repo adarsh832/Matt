@@ -1,6 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:mobile/theme/app_theme.dart';
+import 'package:markdown/markdown.dart' as md;
+
+class CodeBlockBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+  CodeBlockBuilder(this.context);
+
+  @override
+  Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    var textContent = element.textContent;
+    bool isBlock = textContent.contains('\n');
+    
+    if (!isBlock) {
+       return null;
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        color: AppColors.inputBackground,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: const BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Code', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: textContent));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Code copied to clipboard')),
+                    );
+                  },
+                  child: const Row(
+                    children: [
+                      Icon(Icons.copy, size: 14, color: AppColors.textSecondary),
+                      SizedBox(width: 4),
+                      Text('Copy', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.all(12.0),
+            child: Text(
+              textContent,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 14,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class ChatBubble extends StatefulWidget {
   final String message;
@@ -70,24 +141,56 @@ class _ChatBubbleState extends State<ChatBubble> {
                   bottomRight: Radius.circular(16),
                 ),
               ) : null,
-              child: MarkdownBody(
-                data: widget.message,
-                styleSheet: MarkdownStyleSheet(
-                  p: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.textPrimary,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MarkdownBody(
+                    data: widget.message,
+                    builders: {
+                      'code': CodeBlockBuilder(context),
+                    },
+                    styleSheet: MarkdownStyleSheet(
+                      p: const TextStyle(
+                        fontSize: 15,
+                        color: AppColors.textPrimary,
+                      ),
+                      code: const TextStyle(
+                        backgroundColor: AppColors.inputBackground,
+                        color: AppColors.primary,
+                        fontFamily: 'monospace',
+                      ),
+                      codeblockDecoration: BoxDecoration(
+                        color: AppColors.inputBackground,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                    ),
                   ),
-                  code: TextStyle(
-                    backgroundColor: AppColors.inputBackground,
-                    color: AppColors.primary,
-                    fontFamily: 'monospace',
-                  ),
-                  codeblockDecoration: BoxDecoration(
-                    color: AppColors.inputBackground,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                ),
+                  if (!widget.isUser) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: widget.message));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Message copied to clipboard')),
+                            );
+                          },
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.copy, size: 14, color: AppColors.textSecondary),
+                              SizedBox(width: 4),
+                              Text('Copy', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ),
           ],

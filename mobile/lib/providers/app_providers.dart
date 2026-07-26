@@ -16,9 +16,8 @@ final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageService();
 });
 
-final apiServiceProvider = Provider<ApiService?>((ref) {
+final apiServiceProvider = Provider<ApiService>((ref) {
   final storage = ref.watch(storageServiceProvider);
-  if (storage == null) return null;
   return ApiService(storage);
 });
 
@@ -27,7 +26,24 @@ final apiServiceProvider = Provider<ApiService?>((ref) {
 class ConnectionStateNotifier extends Notifier<bool> {
   @override
   bool build() => false;
+  
   void setConnected(bool value) => state = value;
+  
+  Future<void> checkConnection() async {
+    final storage = ref.read(storageServiceProvider);
+    
+    final token = await storage.getDeviceToken();
+    if (token != null && token.isNotEmpty) {
+      final serverUrl = await storage.getServerUrl();
+      if (serverUrl != null && serverUrl.isNotEmpty) {
+         final api = ref.read(apiServiceProvider);
+         final isHealthy = await api.checkHealth(serverUrl);
+         state = isHealthy;
+         return;
+      }
+    }
+    state = false;
+  }
 }
 final connectionStateProvider = NotifierProvider<ConnectionStateNotifier, bool>(ConnectionStateNotifier.new);
 

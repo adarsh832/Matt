@@ -34,7 +34,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
+      await ref.read(connectionStateProvider.notifier).checkConnection();
       if (mounted) {
         final isConnected = ref.read(connectionStateProvider);
         if (isConnected) {

@@ -7,7 +7,6 @@ import 'package:mobile/screens/personality/personality_screen.dart';
 import 'package:mobile/screens/qr_connection/qr_connection_screen.dart';
 import 'package:mobile/screens/chat/chat_screen.dart';
 import 'package:mobile/screens/settings/settings_screen.dart';
-import 'package:mobile/providers/app_providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,17 +25,8 @@ class MattApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the storage service to initialize connection state
-    final storage = ref.watch(storageServiceProvider);
-    
-    if (storage != null) {
-      // Async initialization of connection state based on saved token
-      storage.getDeviceToken().then((token) {
-        if (token != null && token.isNotEmpty) {
-          ref.read(connectionStateProvider.notifier).setConnected(true);
-        }
-      });
-    }
+    // Storage service is available, but connection state 
+    // will be checked in the SplashScreen
 
     return MaterialApp(
       title: 'Matt - Local AI',
