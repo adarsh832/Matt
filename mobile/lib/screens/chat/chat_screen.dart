@@ -18,6 +18,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   int _dotCount = 1;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -72,7 +73,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: AppColors.background,
+      drawer: _buildDrawer(),
       body: SafeArea(
         child: Column(
           children: [
@@ -176,37 +179,48 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () {
-              if (!ref.read(connectionStateProvider)) {
-                Navigator.pushNamed(context, '/qr_connection');
-              }
-            },
-            child: Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: ref.watch(connectionStateProvider) ? AppColors.connectedGreen : Colors.red,
-                    shape: BoxShape.circle,
-                  ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.menu, color: AppColors.textSecondary),
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const SizedBox(width: 16),
+              GestureDetector(
+                onTap: () {
+                  if (!ref.read(connectionStateProvider)) {
+                    Navigator.pushNamed(context, '/qr_connection');
+                  }
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: ref.watch(connectionStateProvider) ? AppColors.connectedGreen : Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      ref.watch(connectionStateProvider) ? 'Connected' : 'Connect',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: ref.watch(connectionStateProvider) 
+                            ? AppColors.textSecondary 
+                            : AppColors.primary,
+                        fontWeight: ref.watch(connectionStateProvider) 
+                            ? FontWeight.normal 
+                            : FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  ref.watch(connectionStateProvider) ? 'Connected' : 'Connect',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: ref.watch(connectionStateProvider) 
-                        ? AppColors.textSecondary 
-                        : AppColors.primary,
-                    fontWeight: ref.watch(connectionStateProvider) 
-                        ? FontWeight.normal 
-                        : FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           Expanded(
             child: Text(
@@ -229,6 +243,91 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      backgroundColor: AppColors.background,
+      child: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ref.read(chatProvider.notifier).startNewChat();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('New Chat'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.background,
+                  minimumSize: const Size(double.infinity, 48),
+                ),
+              ),
+            ),
+            const Divider(color: AppColors.divider, height: 1),
+            Expanded(
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final conversationsAsync = ref.watch(conversationsProvider);
+                  
+                  return conversationsAsync.when(
+                    data: (conversations) {
+                      if (conversations.isEmpty) {
+                        return const Center(
+                          child: Text('No past chats', style: TextStyle(color: AppColors.textSecondary)),
+                        );
+                      }
+                      
+                      return ListView.builder(
+                        itemCount: conversations.length,
+                        itemBuilder: (context, index) {
+                          final conv = conversations[index];
+                          return Dismissible(
+                            key: Key(conv.id),
+                            direction: DismissDirection.endToStart,
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20.0),
+                              child: const Icon(Icons.delete, color: Colors.white),
+                            ),
+                            onDismissed: (direction) {
+                              ref.read(conversationsProvider.notifier).deleteConversation(conv.id);
+                            },
+                            child: ListTile(
+                              leading: const Icon(Icons.chat_bubble_outline, color: AppColors.textSecondary),
+                              title: Text(
+                                conv.title.isNotEmpty ? conv.title : 'New Chat',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: AppColors.textPrimary),
+                              ),
+                              subtitle: Text(
+                                DateFormat('MMM d, h:mm a').format(conv.updatedAt),
+                                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                              ),
+                              onTap: () {
+                                ref.read(chatProvider.notifier).loadConversation(conv.id);
+                                Navigator.pop(context); // close drawer
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(child: Text('Error: $e', style: const TextStyle(color: Colors.red))),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
