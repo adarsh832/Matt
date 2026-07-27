@@ -3,6 +3,13 @@
 This is the mobile client for **Matt (Local LLM Mobile Companion)**, built with Flutter.
 It acts as the frontend interface for chatting securely with your locally hosted Large Language Models (via LM Studio) from anywhere on your home network.
 
+## Features
+
+- **Local & Secure:** Pairs with your desktop gateway via QR code.
+- **Multi-Chat History:** Conversations are automatically saved to the gateway's database. Access past chats, switch between conversations, and swipe-to-delete right from the chat drawer.
+- **Live Streaming:** Responses stream in real-time, even if you navigate away during generation.
+- **Personalities:** Switch between different AI personas (Coding Partner, Creative Writer, etc.).
+
 ## Project Structure
 
 - `lib/`
