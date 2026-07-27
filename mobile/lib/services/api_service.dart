@@ -134,6 +134,22 @@ class ApiService {
     }
   }
 
+  Future<bool> deleteConversation(String id) async {
+    try {
+      final baseUrl = await _getServerUrl();
+      if (baseUrl == null) throw Exception('Server URL not set');
+
+      final uri = Uri.parse('$baseUrl/conversations/$id');
+      final headers = await _getHeaders();
+
+      final response = await http.delete(uri, headers: headers).timeout(const Duration(seconds: 10));
+
+      return response.statusCode == 200 || response.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Stream<Map<String, dynamic>> streamChat({
     String? conversationId,
     required String model,
