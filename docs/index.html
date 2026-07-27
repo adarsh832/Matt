@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matt — Local LLM Mobile Companion | Documentation</title>
+  <meta name="description" content="Matt is a free, open-source mobile app that lets you chat with your locally hosted LLMs (via LM Studio) from anywhere on your home network. 100% private, zero cloud." />
+  <meta name="keywords" content="Matt, LLM, local AI, LM Studio, mobile companion, open source, Flutter, Python, FastAPI" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- HEADER                                         -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <header class="header" id="top">
+    <div class="header-inner">
+      <div class="header-left">
+        <button class="hamburger-btn" aria-label="Open navigation menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="#top" class="logo">Matt</a>
+        <span class="badge">v0.1.0</span>
+      </div>
+      <div class="header-center">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" placeholder="Search docs…" aria-label="Search documentation" />
+          <kbd class="search-shortcut">Ctrl K</kbd>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="https://github.com/adarsh832/Matt" target="_blank" rel="noopener noreferrer" class="github-link" aria-label="View on GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MOBILE NAV OVERLAY                             -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="mobile-nav-overlay" id="mobileNav">
+    <div class="mobile-nav-drawer">
+      <div class="mobile-nav-header">
+        <span class="logo">Matt</span>
+        <button class="mobile-nav-close" aria-label="Close navigation">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <!-- Mobile nav links are cloned from sidebar by JS -->
+      <nav class="mobile-nav-content" id="mobileNavContent"></nav>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- DOCS LAYOUT (3 Columns)                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="docs-layout">
+
+    <!-- ─────────── LEFT SIDEBAR ─────────── -->
+    <aside class="sidebar" id="sidebar">
+      <nav class="sidebar-nav">
+
+        <!-- Overview -->
+        <div class="menu-group open">
+          <button class="menu-trigger">
+            <span>Overview</span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="menu-content">
+            <div class="menu-content-inner">
+              <a href="#introduction" class="nav-link active" data-section="introduction">Introduction</a>
+              <a href="#features" class="nav-link" data-section="features">Features</a>
+              <a href="#architecture" class="nav-link" data-section="architecture">Architecture</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="menu-group">
+          <button class="menu-trigger">
+            <span>Getting Started</span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="menu-content">
+            <div class="menu-content-inner">
+              <a href="#prerequisites" class="nav-link" data-section="prerequisites">Prerequisites</a>
+              <a href="#quick-start" class="nav-link" data-section="quick-start">Quick Start</a>
+              <a href="#pairing" class="nav-link" data-section="pairing">Pairing Guide</a>
+              <a href="#troubleshooting" class="nav-link" data-section="troubleshooting">Troubleshooting</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gateway API -->
+        <div class="menu-group">
+          <button class="menu-trigger">
+            <span>Gateway API</span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="menu-content">
+            <div class="menu-content-inner">
+              <a href="#api-overview" class="nav-link" data-section="api-overview">API Overview</a>
+              <a href="#api-health" class="nav-link" data-section="api-health">Health Check</a>
+              <a href="#api-pair" class="nav-link" data-section="api-pair">Pairing</a>
+              <a href="#api-models" class="nav-link" data-section="api-models">Models</a>
+              <a href="#api-chat" class="nav-link" data-section="api-chat">Chat</a>
+              <a href="#api-conversations" class="nav-link" data-section="api-conversations">Conversations</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration -->
+        <div class="menu-group">
+          <button class="menu-trigger">
+            <span>Configuration</span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="menu-content">
+            <div class="menu-content-inner">
+              <a href="#gateway-config" class="nav-link" data-section="gateway-config">Gateway Config</a>
+              <a href="#mobile-app" class="nav-link" data-section="mobile-app">Mobile App</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contributing -->
+        <div class="menu-group">
+          <button class="menu-trigger">
+            <span>Contributing</span>
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="menu-content">
+            <div class="menu-content-inner">
+              <a href="#contributing" class="nav-link" data-section="contributing">How to Contribute</a>
+              <a href="#roadmap" class="nav-link" data-section="roadmap">Roadmap</a>
+            </div>
+          </div>
+        </div>
+
+      </nav>
+    </aside>
+
+    <!-- ─────────── MAIN CONTENT ─────────── -->
+    <main class="content">
+
+      <!-- ══════════ INTRODUCTION ══════════ -->
+      <section id="introduction" class="doc-section">
+        <h1>Matt Documentation</h1>
+        <p class="lead">
+          <strong>Matt</strong> is a free, open-source mobile application that lets you chat securely with your locally hosted Large Language Models — via <a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a> — from anywhere on your home network.
+        </p>
+        <p>
+          By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile client, Matt ensures that all inference runs on your own hardware. Your chats remain 100% private, with zero data sent to the cloud. Setup takes less than a minute via a simple QR code scan.
+        </p>
+
+        <div class="callout callout-tip">
+          <div class="callout-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="callout-body">
+            <div class="callout-title">Quick Download</div>
+            <p>Don't want to build from source? Download the latest pre-compiled Android APK from the <a href="https://github.com/adarsh832/Matt/releases/latest" target="_blank" rel="noopener">Releases page</a>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ FEATURES ══════════ -->
+      <section id="features" class="doc-section">
+        <h2>Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 class="feature-title">Zero Configuration</h3>
+            <p class="feature-desc">Scan a QR code on your PC to instantly pair your mobile device. No IP addresses to type, no tokens to copy.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3 class="feature-title">100% Local &amp; Private</h3>
+            <p class="feature-desc">No cloud servers. All communication happens over your home Wi-Fi between your phone and your PC.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3 class="feature-title">Real-time Streaming</h3>
+            <p class="feature-desc">Watch the AI generate responses on your phone in real-time via Server-Sent Events streaming.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <h3 class="feature-title">Model Switching</h3>
+            <p class="feature-desc">Easily switch between the models you have installed in LM Studio — Qwen, Llama, Gemma, and more.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h3 class="feature-title">Custom Personalities</h3>
+            <p class="feature-desc">Choose from predefined AI personas — Coding Partner, Creative Writer — or inject your own system prompts.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <h3 class="feature-title">Rich Markdown</h3>
+            <p class="feature-desc">Code blocks, bolding, and italics are rendered beautifully in the chat interface with full syntax highlighting.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ ARCHITECTURE ══════════ -->
+      <section id="architecture" class="doc-section">
+        <h2>Architecture</h2>
+        <p>Matt is split into two main components that communicate over your local Wi-Fi network:</p>
+
+        <div class="architecture-diagram">
+          <div class="arch-box">
+            <div class="arch-box-icon">📱</div>
+            <div class="arch-box-label">Mobile App</div>
+            <div class="arch-box-tech">Flutter / Dart</div>
+          </div>
+          <div class="arch-connector">
+            <div class="arch-connector-line"></div>
+            <span class="arch-connector-label">HTTP / SSE</span>
+          </div>
+          <div class="arch-box">
+            <div class="arch-box-icon">🖥️</div>
+            <div class="arch-box-label">Python Gateway</div>
+            <div class="arch-box-tech">FastAPI / Uvicorn</div>
+          </div>
+          <div class="arch-connector">
+            <div class="arch-connector-line"></div>
+            <span class="arch-connector-label">Localhost API</span>
+          </div>
+          <div class="arch-box">
+            <div class="arch-box-icon">🧠</div>
+            <div class="arch-box-label">LM Studio</div>
+            <div class="arch-box-tech">Local LLM Server</div>
+          </div>
+          <div class="arch-connector">
+            <div class="arch-connector-line"></div>
+            <span class="arch-connector-label">Inference</span>
+          </div>
+          <div class="arch-box">
+            <div class="arch-box-icon">⚡</div>
+            <div class="arch-box-label">Local LLM</div>
+            <div class="arch-box-tech">Qwen, Llama, Gemma…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ PREREQUISITES ══════════ -->
+      <section id="prerequisites" class="doc-section">
+        <h2>Prerequisites</h2>
+        <p>Before setting up Matt, ensure you have the following installed on your system:</p>
+        <div class="prereq-list">
+          <div class="prereq-item">
+            <div class="prereq-check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--connected-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="prereq-body">
+              <strong><a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a></strong> — installed and running on your PC with the "Local Server" started on the default port <code>1234</code>.
+            </div>
+          </div>
+          <div class="prereq-item">
+            <div class="prereq-check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--connected-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="prereq-body">
+              <strong>Python 3.12+</strong> — required to run the gateway server.
+            </div>
+          </div>
+          <div class="prereq-item">
+            <div class="prereq-check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--connected-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="prereq-body">
+              <strong><a href="https://flutter.dev/docs/get-started/install" target="_blank" rel="noopener">Flutter SDK</a></strong> — only needed if you want to build the mobile app from source. Otherwise, download the APK from <a href="https://github.com/adarsh832/Matt/releases/latest" target="_blank" rel="noopener">Releases</a>.
+            </div>
+          </div>
+          <div class="prereq-item">
+            <div class="prereq-check">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--connected-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="prereq-body">
+              Both your <strong>phone</strong> and <strong>PC</strong> must be connected to the <strong>same Wi-Fi network</strong>.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ QUICK START ══════════ -->
+      <section id="quick-start" class="doc-section">
+        <h2>Quick Start</h2>
+        <p>Get Matt running in under a minute with these two steps.</p>
+
+        <!-- OS Tabs -->
+        <div class="os-tabs-container">
+          <div class="os-tabs">
+            <button class="os-tab active" data-os="windows">Windows</button>
+            <button class="os-tab" data-os="macos">macOS</button>
+            <button class="os-tab" data-os="linux">Linux</button>
+          </div>
+
+          <div class="os-tab-content active" data-os="windows">
+            <h3>Step 1 — Run the Python Gateway</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>PowerShell</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd gateway
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python main.py</code></pre></div>
+            </div>
+            <h3>Step 2 — Run the Mobile App (from source)</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>PowerShell</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd mobile
+flutter pub get
+flutter run</code></pre></div>
+            </div>
+          </div>
+
+          <div class="os-tab-content" data-os="macos">
+            <h3>Step 1 — Run the Python Gateway</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>Terminal</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd gateway
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py</code></pre></div>
+            </div>
+            <h3>Step 2 — Run the Mobile App (from source)</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>Terminal</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd mobile
+flutter pub get
+flutter run</code></pre></div>
+            </div>
+          </div>
+
+          <div class="os-tab-content" data-os="linux">
+            <h3>Step 1 — Run the Python Gateway</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>Bash</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd gateway
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python main.py</code></pre></div>
+            </div>
+            <h3>Step 2 — Run the Mobile App (from source)</h3>
+            <div class="code-wrapper">
+              <div class="code-header">
+                <span>Bash</span>
+                <button class="copy-btn" aria-label="Copy code">Copy</button>
+              </div>
+              <div class="code-block"><pre><code>cd mobile
+flutter pub get
+flutter run</code></pre></div>
+            </div>
+          </div>
+        </div>
+
+        <p>A QR code will appear in your terminal. Open the Matt app and scan it to pair. That's it!</p>
+      </section>
+
+      <!-- ══════════ PAIRING GUIDE ══════════ -->
+      <section id="pairing" class="doc-section">
+        <h2>Pairing Guide</h2>
+        <p>Matt uses a QR-code based pairing system to securely connect your mobile device to the gateway without manual IP configuration.</p>
+
+        <div class="stepper">
+          <div class="step active" data-step="1">
+            <div class="step-indicator">
+              <div class="step-number">1</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Start LM Studio's Local Server</h3>
+              <p>Open LM Studio on your PC. Go to the <strong>Local Server</strong> tab and click <strong>Start Server</strong>. The default port is <code>1234</code>.</p>
+            </div>
+          </div>
+          <div class="step" data-step="2">
+            <div class="step-indicator">
+              <div class="step-number">2</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Run the Python Gateway</h3>
+              <p>In your terminal, navigate to the <code>gateway/</code> directory and run <code>python main.py</code>. The gateway will auto-detect LM Studio and print a QR code containing your local IP address and a one-time pairing token.</p>
+            </div>
+          </div>
+          <div class="step" data-step="3">
+            <div class="step-indicator">
+              <div class="step-number">3</div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Scan with the Mobile App</h3>
+              <p>Open the Matt app on your phone. It will launch the QR scanner automatically. Point your camera at the terminal QR code. The app will decode the server URL and pairing token, register itself with the gateway, and navigate you straight to the chat screen.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-note">
+          <div class="callout-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </div>
+          <div class="callout-body">
+            <div class="callout-title">How it works under the hood</div>
+            <p>The QR code encodes a JSON payload: <code>{"server": "http://192.168.x.x:8080", "device_name": "YOUR-PC", "pairing_token": "..."}</code>. The mobile app sends a <code>POST /pair</code> request with this token to register itself and receives a persistent device token for subsequent API calls.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ TROUBLESHOOTING ══════════ -->
+      <section id="troubleshooting" class="doc-section">
+        <h2>Troubleshooting</h2>
+
+        <div class="faq-item">
+          <h3>📶 "Can't connect" after scanning QR code</h3>
+          <ul>
+            <li>Ensure both your phone and PC are on the <strong>same Wi-Fi network</strong> (same SSID, same subnet).</li>
+            <li>Check that Windows Firewall isn't blocking port <code>8080</code>. You may need to add an inbound rule for the gateway.</li>
+            <li>Try accessing <code>http://&lt;your-pc-ip&gt;:8080/health</code> from your phone's browser to verify connectivity.</li>
+          </ul>
+        </div>
+
+        <div class="faq-item">
+          <h3>🧠 "LM Studio is disconnected"</h3>
+          <ul>
+            <li>Make sure LM Studio's <strong>Local Server</strong> is running on port <code>1234</code>.</li>
+            <li>The gateway will retry the connection every 10 seconds automatically.</li>
+            <li>You can also specify a custom LM Studio URL: <code>python main.py --lmstudio-url http://localhost:1234</code></li>
+          </ul>
+        </div>
+
+        <div class="faq-item">
+          <h3>📱 App shows a blank screen or crashes</h3>
+          <ul>
+            <li>Make sure you're using the latest release APK from <a href="https://github.com/adarsh832/Matt/releases/latest" target="_blank" rel="noopener">GitHub Releases</a>.</li>
+            <li>If building from source, ensure your Flutter SDK version is <code>^3.11.3</code> or later.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ══════════ API OVERVIEW ══════════ -->
+      <section id="api-overview" class="doc-section">
+        <h2>Gateway API Overview</h2>
+        <p>
+          The Matt Gateway exposes a RESTful API built with <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener">FastAPI</a>. All endpoints (except <code>/health</code> and <code>/pair</code>) require a valid <code>X-Device-Token</code> header obtained through the pairing process.
+        </p>
+        <p>The default base URL is <code>http://&lt;your-pc-ip&gt;:8080</code>.</p>
+
+        <div class="callout callout-warning">
+          <div class="callout-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="callout-body">
+            <div class="callout-title">Authentication</div>
+            <p>Include the header <code>X-Device-Token: &lt;your-device-token&gt;</code> on every authenticated request. Failing to do so returns a <code>401 Unauthorized</code> error.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ API: HEALTH ══════════ -->
+      <section id="api-health" class="doc-section">
+        <h2>Health Check</h2>
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/health</code>
+          </div>
+          <p>Returns the gateway and LM Studio connection status. No authentication required.</p>
+          <h4>Response</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "status": "ok",
+  "lmstudio": true,
+  "version": "0.1.0",
+  "gateway": true
+}</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ API: PAIR ══════════ -->
+      <section id="api-pair" class="doc-section">
+        <h2>Pairing</h2>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/pair/qr</code>
+          </div>
+          <p>Returns a PNG image of the QR code for pairing. Open this URL in a browser to display the QR code visually.</p>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/pair/info</code>
+          </div>
+          <p>Returns the JSON pairing payload containing the server URL, device name, and pairing token.</p>
+          <h4>Response</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "server": "http://192.168.1.100:8080",
+  "device_name": "MY-PC",
+  "pairing_token": "a1b2c3d4..."
+}</code></pre></div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-post">POST</span>
+            <code class="endpoint">/pair</code>
+          </div>
+          <p>Registers a new device using the one-time pairing token from the QR code.</p>
+          <h4>Request Body</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "device_name": "My Phone",
+  "pairing_token": "a1b2c3d4..."
+}</code></pre></div>
+          </div>
+          <h4>Response</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "success": true,
+  "device_id": "uuid-device-token..."
+}</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ API: MODELS ══════════ -->
+      <section id="api-models" class="doc-section">
+        <h2>Models</h2>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/models</code>
+          </div>
+          <p>Returns a list of all models available in LM Studio. Requires authentication.</p>
+          <h4>Response</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>[
+  { "id": "qwen2.5-coder-7b-instruct" },
+  { "id": "llama-3.1-8b-instruct" },
+  { "id": "gemma-2-9b-it" }
+]</code></pre></div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-post">POST</span>
+            <code class="endpoint">/models/{model_id}/load</code>
+          </div>
+          <p>Force LM Studio to load a specific model into VRAM by sending a dummy inference request. This blocks until the model is fully loaded.</p>
+          <h4>Response</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "success": true,
+  "model": "qwen2.5-coder-7b-instruct"
+}</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ API: CHAT ══════════ -->
+      <section id="api-chat" class="doc-section">
+        <h2>Chat</h2>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-post">POST</span>
+            <code class="endpoint">/chat</code>
+          </div>
+          <p>Stream a chat completion. Returns a <code>text/event-stream</code> response with Server-Sent Events (SSE). Each event is a JSON object with the streamed token.</p>
+          <h4>Request Body</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "conversation_id": "optional-uuid",
+  "model": "qwen2.5-coder-7b-instruct",
+  "message": "Explain quicksort in Python",
+  "personality": "coding_partner"
+}</code></pre></div>
+          </div>
+          <div class="callout callout-note">
+            <div class="callout-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </div>
+            <div class="callout-body">
+              <div class="callout-title">Conversation ID</div>
+              <p>If <code>conversation_id</code> is omitted, a new conversation is created. Include it to continue an existing conversation thread.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-post">POST</span>
+            <code class="endpoint">/chat/retry</code>
+          </div>
+          <p>Retry the last message in a conversation. Regenerates the AI's response.</p>
+          <h4>Request Body</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "conversation_id": "your-conversation-uuid"
+}</code></pre></div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-post">POST</span>
+            <code class="endpoint">/chat/stop</code>
+          </div>
+          <p>Stop an ongoing generation for a specific conversation.</p>
+          <h4>Request Body</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "conversation_id": "your-conversation-uuid"
+}</code></pre></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ API: CONVERSATIONS ══════════ -->
+      <section id="api-conversations" class="doc-section">
+        <h2>Conversations</h2>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/conversations</code>
+          </div>
+          <p>Retrieve a list of all saved conversations.</p>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-get">GET</span>
+            <code class="endpoint">/conversations/{conversation_id}</code>
+          </div>
+          <p>Retrieve a specific conversation by its ID, including the full message history.</p>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-put">PUT</span>
+            <code class="endpoint">/conversations/{conversation_id}</code>
+          </div>
+          <p>Rename a conversation.</p>
+          <h4>Request Body</h4>
+          <div class="code-wrapper">
+            <div class="code-header">
+              <span>JSON</span>
+              <button class="copy-btn" aria-label="Copy code">Copy</button>
+            </div>
+            <div class="code-block"><pre><code>{
+  "title": "My Python Chat"
+}</code></pre></div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="method-badge method-delete">DELETE</span>
+            <code class="endpoint">/conversations/{conversation_id}</code>
+          </div>
+          <p>Permanently delete a conversation and all its messages.</p>
+        </div>
+      </section>
+
+      <!-- ══════════ GATEWAY CONFIG ══════════ -->
+      <section id="gateway-config" class="doc-section">
+        <h2>Gateway Configuration</h2>
+        <p>The gateway can be configured via environment variables (in a <code>.env</code> file in the <code>gateway/</code> directory) or CLI arguments.</p>
+
+        <div class="config-table-wrapper">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GATEWAY_HOST</code></td>
+                <td><code>0.0.0.0</code></td>
+                <td>Host address to bind the gateway to.</td>
+              </tr>
+              <tr>
+                <td><code>GATEWAY_PORT</code></td>
+                <td><code>8080</code></td>
+                <td>Port number for the gateway server.</td>
+              </tr>
+              <tr>
+                <td><code>LMSTUDIO_BASE_URL</code></td>
+                <td><code>http://localhost:1234</code></td>
+                <td>LM Studio API base URL.</td>
+              </tr>
+              <tr>
+                <td><code>LMSTUDIO_RETRY_INTERVAL</code></td>
+                <td><code>10</code></td>
+                <td>Seconds between LM Studio reconnection attempts.</td>
+              </tr>
+              <tr>
+                <td><code>MAX_CONTEXT_MESSAGES</code></td>
+                <td><code>50</code></td>
+                <td>Maximum messages sent as context to the LLM.</td>
+              </tr>
+              <tr>
+                <td><code>MODEL_CACHE_TTL</code></td>
+                <td><code>30</code></td>
+                <td>Seconds to cache the model list.</td>
+              </tr>
+              <tr>
+                <td><code>DEVICE_NAME</code></td>
+                <td><em>hostname</em></td>
+                <td>Display name shown in pairing QR code.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>CLI Arguments</h3>
+        <div class="code-wrapper">
+          <div class="code-header">
+            <span>Bash</span>
+            <button class="copy-btn" aria-label="Copy code">Copy</button>
+          </div>
+          <div class="code-block"><pre><code>python main.py --port 9090 --host 0.0.0.0 --lmstudio-url http://localhost:1234</code></pre></div>
+        </div>
+      </section>
+
+      <!-- ══════════ MOBILE APP ══════════ -->
+      <section id="mobile-app" class="doc-section">
+        <h2>Mobile App</h2>
+        <p>The mobile client is a Flutter application built with Material 3 and Riverpod for state management.</p>
+
+        <h3>Project Structure</h3>
+        <div class="code-wrapper">
+          <div class="code-header">
+            <span>Directory</span>
+            <button class="copy-btn" aria-label="Copy code">Copy</button>
+          </div>
+          <div class="code-block"><pre><code>mobile/
+├── lib/
+│   ├── screens/
+│   │   ├── chat/           # Main chat interface
+│   │   ├── personality/    # AI persona selection
+│   │   ├── qr_connection/  # QR code scanner & pairing
+│   │   ├── settings/       # App settings
+│   │   └── splash/         # Splash screen
+│   ├── theme/              # App-wide theming (Material 3)
+│   └── widgets/            # Reusable UI components
+├── assets/
+│   └── logo.png
+└── pubspec.yaml</code></pre></div>
+        </div>
+
+        <h3>Key Dependencies</h3>
+        <div class="config-table-wrapper">
+          <table class="config-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>flutter_riverpod</code></td>
+                <td>Reactive state management</td>
+              </tr>
+              <tr>
+                <td><code>mobile_scanner</code></td>
+                <td>QR code scanning for device pairing</td>
+              </tr>
+              <tr>
+                <td><code>flutter_markdown</code></td>
+                <td>Rich markdown rendering in chat</td>
+              </tr>
+              <tr>
+                <td><code>shared_preferences</code></td>
+                <td>Persistent local storage for tokens and settings</td>
+              </tr>
+              <tr>
+                <td><code>http</code></td>
+                <td>HTTP client for API communication</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Building from Source</h3>
+        <div class="code-wrapper">
+          <div class="code-header">
+            <span>Bash</span>
+            <button class="copy-btn" aria-label="Copy code">Copy</button>
+          </div>
+          <div class="code-block"><pre><code># Debug build (runs on connected device/emulator)
+cd mobile
+flutter pub get
+flutter run
+
+# Release APK build
+flutter build apk --release</code></pre></div>
+        </div>
+      </section>
+
+      <!-- ══════════ CONTRIBUTING ══════════ -->
+      <section id="contributing" class="doc-section">
+        <h2>How to Contribute</h2>
+        <p>We are building Matt in public and are actively looking for contributors! Whether you are a student looking for resume experience, a Flutter developer, or a Python backend engineer, we want your help.</p>
+
+        <div class="stepper stepper-compact">
+          <div class="step completed" data-step="1">
+            <div class="step-indicator">
+              <div class="step-number">1</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Find an Issue</h3>
+              <p>Check the <a href="https://github.com/adarsh832/Matt/issues" target="_blank" rel="noopener">Issues tab</a> for tasks labeled <code>good first issue</code> or <code>help wanted</code>.</p>
+            </div>
+          </div>
+          <div class="step completed" data-step="2">
+            <div class="step-indicator">
+              <div class="step-number">2</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Fork &amp; Branch</h3>
+              <p>Fork the repository and create a new branch for your feature or bugfix.</p>
+            </div>
+          </div>
+          <div class="step completed" data-step="3">
+            <div class="step-indicator">
+              <div class="step-number">3</div>
+            </div>
+            <div class="step-content">
+              <h3 class="step-title">Submit a Pull Request</h3>
+              <p>Open a PR against <code>main</code> with a clear description of what you changed and why.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════ ROADMAP ══════════ -->
+      <section id="roadmap" class="doc-section">
+        <h2>Roadmap</h2>
+        <p>Matt is currently at <strong>Version 0.1 MVP</strong>. Here's what's planned for future releases:</p>
+
+        <div class="roadmap-list">
+          <div class="roadmap-item roadmap-done">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-body">
+              <strong>v0.1 — MVP</strong>
+              <p>QR pairing, streaming chat, model switching, personalities, chat history, markdown rendering.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-body">
+              <strong>v0.2 — Enhanced Experience</strong>
+              <p>Ollama backend support, multi-device management, image generation, chat export.</p>
+            </div>
+          </div>
+          <div class="roadmap-item">
+            <div class="roadmap-marker"></div>
+            <div class="roadmap-body">
+              <strong>v0.3 — Beyond the LAN</strong>
+              <p>Secure remote tunnels for chat outside your home network, end-to-end encryption, iOS App Store release.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ─────────── RIGHT SIDEBAR (TOC) ─────────── -->
+    <aside class="toc" id="toc">
+      <div class="toc-header">On this page</div>
+      <nav class="toc-nav">
+        <a href="#introduction" class="toc-link active" data-section="introduction">Introduction</a>
+        <a href="#features" class="toc-link" data-section="features">Features</a>
+        <a href="#architecture" class="toc-link" data-section="architecture">Architecture</a>
+        <a href="#prerequisites" class="toc-link" data-section="prerequisites">Prerequisites</a>
+        <a href="#quick-start" class="toc-link" data-section="quick-start">Quick Start</a>
+        <a href="#pairing" class="toc-link" data-section="pairing">Pairing Guide</a>
+        <a href="#troubleshooting" class="toc-link" data-section="troubleshooting">Troubleshooting</a>
+        <a href="#api-overview" class="toc-link" data-section="api-overview">API Overview</a>
+        <a href="#api-health" class="toc-link" data-section="api-health">Health Check</a>
+        <a href="#api-pair" class="toc-link" data-section="api-pair">Pairing</a>
+        <a href="#api-models" class="toc-link" data-section="api-models">Models</a>
+        <a href="#api-chat" class="toc-link" data-section="api-chat">Chat</a>
+        <a href="#api-conversations" class="toc-link" data-section="api-conversations">Conversations</a>
+        <a href="#gateway-config" class="toc-link" data-section="gateway-config">Gateway Config</a>
+        <a href="#mobile-app" class="toc-link" data-section="mobile-app">Mobile App</a>
+        <a href="#contributing" class="toc-link" data-section="contributing">Contributing</a>
+        <a href="#roadmap" class="toc-link" data-section="roadmap">Roadmap</a>
+      </nav>
+    </aside>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- FOOTER                                         -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="logo">Matt</span>
+        <span class="footer-tagline">Local LLM Mobile Companion</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/adarsh832/Matt" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/adarsh832/Matt/releases/latest" target="_blank" rel="noopener noreferrer">Releases</a>
+        <a href="https://github.com/adarsh832/Matt/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+        <span class="footer-license">MIT License</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top button -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Scroll to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>
