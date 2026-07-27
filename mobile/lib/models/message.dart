@@ -23,7 +23,7 @@ class Message {
       content: json['content'] as String? ?? '',
       model: json['model'] as String?,
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'].toString())
+          ? DateTime.parse(json['created_at'].toString()).toLocal()
           : DateTime.now(),
     );
   }
