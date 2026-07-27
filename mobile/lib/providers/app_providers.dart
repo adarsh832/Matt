@@ -301,34 +301,52 @@ class ChatNotifier extends Notifier<ChatState> {
           }
         } 
         
-        // If the user switched away from this conversation, stop processing the stream
+        // If the user switched away from this conversation, just consume the stream silently
+        // so the backend can finish generating and save it to the DB.
         if ((state.conversation?.id ?? '') != currentTargetId) {
-          break;
+          if (type == 'done' || type == 'error') {
+             break;
+          }
+          continue;
         }
 
         if (type == 'chunk') {
           accumulatedContent += event['content'];
           
-          // Update the last message (the temp assistant message) with new content
           final msgs = List<Message>.from(state.conversation!.messages);
-          final lastMsg = msgs.last;
-          msgs[msgs.length - 1] = Message(
-            id: lastMsg.id,
-            conversationId: lastMsg.conversationId,
-            role: lastMsg.role,
-            content: accumulatedContent,
-            model: lastMsg.model,
-            createdAt: lastMsg.createdAt,
-          );
-          
-          state = state.copyWith(
-            conversation: state.conversation!.copyWith(messages: msgs),
-          );
+          if (msgs.isNotEmpty) {
+            if (msgs.last.role != 'assistant') {
+               // The temp message was lost (e.g. user navigated away and back). Recreate it.
+               msgs.add(Message(
+                 id: 'temp_assistant_${DateTime.now().millisecondsSinceEpoch}',
+                 conversationId: currentTargetId,
+                 role: 'assistant',
+                 content: '',
+                 createdAt: DateTime.now(),
+               ));
+            }
+            
+            final lastMsg = msgs.last;
+            msgs[msgs.length - 1] = Message(
+              id: lastMsg.id,
+              conversationId: lastMsg.conversationId,
+              role: lastMsg.role,
+              content: accumulatedContent,
+              model: lastMsg.model,
+              createdAt: lastMsg.createdAt,
+            );
+            
+            state = state.copyWith(
+              conversation: state.conversation!.copyWith(messages: msgs),
+            );
+          }
         } else if (type == 'done') {
-          // Could refresh from server here if needed, but streaming accumulated state is fine
           break;
         } else if (type == 'error') {
-          state = state.copyWith(error: event['message'], isGenerating: false);
+          // Only show error if we are still on the same conversation
+          if ((state.conversation?.id ?? '') == currentTargetId) {
+            state = state.copyWith(error: event['message'], isGenerating: false);
+          }
           return;
         }
       }
