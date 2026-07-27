@@ -187,26 +187,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-              const SizedBox(width: 16),
-              GestureDetector(
-                onTap: () {
-                  if (!ref.read(connectionStateProvider)) {
-                    Navigator.pushNamed(context, '/qr_connection');
-                  }
-                },
-                child: Row(
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: ref.watch(connectionStateProvider) ? AppColors.connectedGreen : Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
           Expanded(
