@@ -273,6 +273,8 @@ class ChatNotifier extends Notifier<ChatState> {
 
     state = state.copyWith(conversation: updatedConv, isGenerating: true, error: null);
 
+    String currentTargetId = state.conversation?.id ?? '';
+
     try {
       final stream = api.streamChat(
         conversationId: state.conversation?.id, // null starts new conversation
@@ -288,13 +290,23 @@ class ChatNotifier extends Notifier<ChatState> {
         
         if (type == 'start') {
           // Update conversation ID if it was newly created
-          if (state.conversation?.id.isEmpty ?? true) {
-             updatedConv = updatedConv.copyWith(id: event['conversation_id']);
-             state = state.copyWith(conversation: updatedConv);
-             // Refresh the conversation list in the drawer
-             ref.read(conversationsProvider.notifier).refresh();
+          if (currentTargetId.isEmpty) {
+             currentTargetId = event['conversation_id'];
+             if (state.conversation?.id.isEmpty ?? true) {
+                 updatedConv = updatedConv.copyWith(id: currentTargetId);
+                 state = state.copyWith(conversation: updatedConv);
+                 // Refresh the conversation list in the drawer
+                 ref.read(conversationsProvider.notifier).refresh();
+             }
           }
-        } else if (type == 'chunk') {
+        } 
+        
+        // If the user switched away from this conversation, stop processing the stream
+        if ((state.conversation?.id ?? '') != currentTargetId) {
+          break;
+        }
+
+        if (type == 'chunk') {
           accumulatedContent += event['content'];
           
           // Update the last message (the temp assistant message) with new content
@@ -321,7 +333,10 @@ class ChatNotifier extends Notifier<ChatState> {
         }
       }
       
-      state = state.copyWith(isGenerating: false);
+      // Only reset generating state if we are still on the same conversation
+      if ((state.conversation?.id ?? '') == currentTargetId) {
+        state = state.copyWith(isGenerating: false);
+      }
       
     } catch (e) {
       state = state.copyWith(error: e.toString(), isGenerating: false);
