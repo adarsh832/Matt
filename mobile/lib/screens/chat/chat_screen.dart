@@ -204,19 +204,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      ref.watch(connectionStateProvider) ? 'Connected' : 'Connect',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: ref.watch(connectionStateProvider) 
-                            ? AppColors.textSecondary 
-                            : AppColors.primary,
-                        fontWeight: ref.watch(connectionStateProvider) 
-                            ? FontWeight.normal 
-                            : FontWeight.w600,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -253,23 +240,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  ref.read(chatProvider.notifier).startNewChat();
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('New Chat'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.background,
-                  minimumSize: const Size(double.infinity, 48),
-                ),
-              ),
-            ),
-            const Divider(color: AppColors.divider, height: 1),
             Expanded(
               child: Consumer(
                 builder: (context, ref, child) {
@@ -324,6 +294,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     error: (e, _) => Center(child: Text('Error: $e', style: const TextStyle(color: Colors.red))),
                   );
                 },
+              ),
+            ),
+            const Divider(color: AppColors.divider, height: 1),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ref.read(chatProvider.notifier).startNewChat();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('New Chat'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.background,
+                  minimumSize: const Size(double.infinity, 48),
+                ),
               ),
             ),
           ],
