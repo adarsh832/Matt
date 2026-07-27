@@ -1,5 +1,7 @@
 # Matt - Local AI Mobile Client
 
+[![Documentation](https://img.shields.io/badge/docs-website-blue.svg)](https://adarsh832.github.io/Matt/)
+
 This is the mobile client for **Matt (Local LLM Mobile Companion)**, built with Flutter.
 It acts as the frontend interface for chatting securely with your locally hosted Large Language Models (via LM Studio) from anywhere on your home network.
 
