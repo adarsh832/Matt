@@ -33,10 +33,10 @@ class Conversation {
       model: json['model'] as String? ?? '',
       personality: json['personality'] as String? ?? '',
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'].toString())
+          ? DateTime.parse(json['created_at'].toString()).toLocal()
           : DateTime.now(),
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'].toString())
+          ? DateTime.parse(json['updated_at'].toString()).toLocal()
           : DateTime.now(),
       messages: parsedMessages,
     );

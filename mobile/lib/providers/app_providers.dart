@@ -102,6 +102,65 @@ final availableModelsProvider = FutureProvider<List<AiModel>>((ref) async {
   }
 });
 
+// --- Conversations State ---
+
+class ConversationsNotifier extends Notifier<AsyncValue<List<Conversation>>> {
+  @override
+  AsyncValue<List<Conversation>> build() {
+    _fetchConversations();
+    return const AsyncValue.loading();
+  }
+
+  Future<void> _fetchConversations() async {
+    final api = ref.read(apiServiceProvider);
+    if (api == null) {
+      state = AsyncValue.error('API service not available', StackTrace.current);
+      return;
+    }
+
+    try {
+      state = const AsyncValue.loading();
+      final conversations = await api.getConversations();
+      // Sort by updatedAt descending
+      conversations.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+      state = AsyncValue.data(conversations);
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
+    }
+  }
+
+  Future<void> refresh() async {
+    await _fetchConversations();
+  }
+
+  Future<bool> deleteConversation(String id) async {
+    final api = ref.read(apiServiceProvider);
+    if (api == null) return false;
+
+    try {
+      final success = await api.deleteConversation(id);
+      if (success) {
+        // Optimistically remove from state
+        state.whenData((conversations) {
+          final updated = conversations.where((c) => c.id != id).toList();
+          state = AsyncValue.data(updated);
+        });
+        
+        // Check if the deleted conversation is the active one
+        final currentChatId = ref.read(chatProvider).conversation?.id;
+        if (currentChatId == id) {
+          ref.read(chatProvider.notifier).startNewChat();
+        }
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
+final conversationsProvider = NotifierProvider<ConversationsNotifier, AsyncValue<List<Conversation>>>(ConversationsNotifier.new);
+
 // --- Chat State ---
 
 class ChatState {
@@ -138,6 +197,29 @@ class ChatNotifier extends Notifier<ChatState> {
 
   void clearError() {
     state = state.copyWith(error: null);
+  }
+
+  void startNewChat() {
+    state = ChatState(); // Resets to initial empty state
+  }
+
+  Future<void> loadConversation(String id) async {
+    final api = ref.read(apiServiceProvider);
+    if (api == null) return;
+    
+    try {
+      state = state.copyWith(isGenerating: true, error: null);
+      final conversation = await api.getConversation(id);
+      
+      // Update the personality based on the loaded conversation
+      if (conversation.personality.isNotEmpty) {
+        ref.read(personalityProvider.notifier).setPersonality(conversation.personality);
+      }
+      
+      state = state.copyWith(conversation: conversation, isGenerating: false);
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isGenerating: false);
+    }
   }
 
   Future<void> sendMessage(String text) async {
@@ -191,6 +273,8 @@ class ChatNotifier extends Notifier<ChatState> {
 
     state = state.copyWith(conversation: updatedConv, isGenerating: true, error: null);
 
+    String currentTargetId = state.conversation?.id ?? '';
+
     try {
       final stream = api.streamChat(
         conversationId: state.conversation?.id, // null starts new conversation
@@ -206,38 +290,71 @@ class ChatNotifier extends Notifier<ChatState> {
         
         if (type == 'start') {
           // Update conversation ID if it was newly created
-          if (state.conversation?.id.isEmpty ?? true) {
-             updatedConv = updatedConv.copyWith(id: event['conversation_id']);
-             state = state.copyWith(conversation: updatedConv);
+          if (currentTargetId.isEmpty) {
+             currentTargetId = event['conversation_id'];
+             if (state.conversation?.id.isEmpty ?? true) {
+                 updatedConv = updatedConv.copyWith(id: currentTargetId);
+                 state = state.copyWith(conversation: updatedConv);
+                 // Refresh the conversation list in the drawer
+                 ref.read(conversationsProvider.notifier).refresh();
+             }
           }
-        } else if (type == 'chunk') {
+        } 
+        
+        // If the user switched away from this conversation, just consume the stream silently
+        // so the backend can finish generating and save it to the DB.
+        if ((state.conversation?.id ?? '') != currentTargetId) {
+          if (type == 'done' || type == 'error') {
+             break;
+          }
+          continue;
+        }
+
+        if (type == 'chunk') {
           accumulatedContent += event['content'];
           
-          // Update the last message (the temp assistant message) with new content
           final msgs = List<Message>.from(state.conversation!.messages);
-          final lastMsg = msgs.last;
-          msgs[msgs.length - 1] = Message(
-            id: lastMsg.id,
-            conversationId: lastMsg.conversationId,
-            role: lastMsg.role,
-            content: accumulatedContent,
-            model: lastMsg.model,
-            createdAt: lastMsg.createdAt,
-          );
-          
-          state = state.copyWith(
-            conversation: state.conversation!.copyWith(messages: msgs),
-          );
+          if (msgs.isNotEmpty) {
+            if (msgs.last.role != 'assistant') {
+               // The temp message was lost (e.g. user navigated away and back). Recreate it.
+               msgs.add(Message(
+                 id: 'temp_assistant_${DateTime.now().millisecondsSinceEpoch}',
+                 conversationId: currentTargetId,
+                 role: 'assistant',
+                 content: '',
+                 createdAt: DateTime.now(),
+               ));
+            }
+            
+            final lastMsg = msgs.last;
+            msgs[msgs.length - 1] = Message(
+              id: lastMsg.id,
+              conversationId: lastMsg.conversationId,
+              role: lastMsg.role,
+              content: accumulatedContent,
+              model: lastMsg.model,
+              createdAt: lastMsg.createdAt,
+            );
+            
+            state = state.copyWith(
+              conversation: state.conversation!.copyWith(messages: msgs),
+            );
+          }
         } else if (type == 'done') {
-          // Could refresh from server here if needed, but streaming accumulated state is fine
           break;
         } else if (type == 'error') {
-          state = state.copyWith(error: event['message'], isGenerating: false);
+          // Only show error if we are still on the same conversation
+          if ((state.conversation?.id ?? '') == currentTargetId) {
+            state = state.copyWith(error: event['message'], isGenerating: false);
+          }
           return;
         }
       }
       
-      state = state.copyWith(isGenerating: false);
+      // Only reset generating state if we are still on the same conversation
+      if ((state.conversation?.id ?? '') == currentTargetId) {
+        state = state.copyWith(isGenerating: false);
+      }
       
     } catch (e) {
       state = state.copyWith(error: e.toString(), isGenerating: false);
