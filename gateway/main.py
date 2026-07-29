@@ -123,6 +123,44 @@ app.include_router(pair_router)
 app.include_router(chat_router)
 
 
+def prompt_for_api_keys() -> None:
+    """Interactively prompt for cloud API keys if they are not set."""
+    import sys
+    import config
+    
+    # Only prompt if running interactively
+    if not sys.stdin.isatty():
+        return
+        
+    print("\n--- Cloud LLM Setup ---")
+    try:
+        ans = input("Would you like to configure any Cloud LLM API keys now? (y/N): ").strip().lower()
+        if ans != 'y':
+            return
+            
+        providers = [
+            ("OpenAI", "OPENAI_API_KEY", config.OPENAI_API_KEY),
+            ("Google Gemini", "GEMINI_API_KEY", config.GEMINI_API_KEY),
+            ("Anthropic", "ANTHROPIC_API_KEY", config.ANTHROPIC_API_KEY)
+        ]
+        
+        for name, env_key, current_val in providers:
+            if current_val:
+                print(f"[{name}] Key is already set.")
+                continue
+                
+            ans = input(f"Configure {name}? (y/N): ").strip().lower()
+            if ans == 'y':
+                key = input(f"Enter your {name} API key: ").strip()
+                if key:
+                    config.save_env_var(env_key, key)
+                    setattr(config, env_key, key)
+                    print(f"Saved {name} API key to .env!")
+    except (EOFError, KeyboardInterrupt):
+        print("\nSkipping API key configuration.")
+    print("-----------------------\n")
+
+
 def main() -> None:
     """CLI entry point with argument parsing."""
     parser = argparse.ArgumentParser(description="Maat Gateway — Local LLM Mobile Companion")
@@ -152,6 +190,8 @@ def main() -> None:
     config.GATEWAY_PORT = args.port
     config.GATEWAY_HOST = args.host
     config.LMSTUDIO_BASE_URL = args.lmstudio_url
+    
+    prompt_for_api_keys()
     
     uvicorn.run(
         "main:app",

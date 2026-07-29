@@ -15,10 +15,9 @@ except ImportError:
 router = APIRouter(prefix="")
 
 @router.get("/models")
-async def get_models(token: str = Depends(verify_device_token)) -> List[Dict[str, str]]:
+async def get_models() -> List[Dict[str, str]]:
     """
-    Get available models from LM Studio.
-    Requires valid device token.
+    Get available models from LM Studio and Cloud Providers.
     """
     if not gateway_core.is_connected:
         raise HTTPException(status_code=503, detail="LM Studio is disconnected")
@@ -32,6 +31,10 @@ async def load_model(model_id: str, token: str = Depends(verify_device_token)) -
     Force LM Studio to load a model by sending a dummy request.
     This will block until the model is fully loaded into VRAM.
     """
+    # Cloud models don't need loading
+    if model_id.startswith(("gpt-", "claude-", "gemini/")):
+        return {"success": True, "model": model_id, "note": "Cloud model requires no loading"}
+        
     if not gateway_core.is_connected:
         raise HTTPException(status_code=503, detail="LM Studio is disconnected")
         
