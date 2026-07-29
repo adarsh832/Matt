@@ -200,35 +200,61 @@ class ChatManager:
         }
 
         full_content = ""
-        client = get_client()
+        is_cloud = model.startswith(("gpt-", "claude-", "gemini/"))
 
         try:
-            async for line in client.stream_post("/v1/chat/completions", json=payload):
-                if self.active_streams.get(conversation_id, False):
-                    logger.info(f"Stream cancelled for conversation {conversation_id}")
-                    yield {"type": "error", "message": "Generation stopped"}
-                    break
-
-                line = line.strip()
-                if not line:
-                    continue
-                    
-                if line.startswith("data: "):
-                    data_str = line[6:]
-                    if data_str.strip() == "[DONE]":
+            if is_cloud:
+                import litellm
+                try:
+                    from gateway import config
+                except ImportError:
+                    import config
+                
+                response = await litellm.acompletion(
+                    model=model,
+                    messages=lm_messages,
+                    stream=True
+                )
+                
+                async for chunk in response:
+                    if self.active_streams.get(conversation_id, False):
+                        logger.info(f"Stream cancelled for conversation {conversation_id}")
+                        yield {"type": "error", "message": "Generation stopped"}
                         break
-                    try:
-                        data_json = json.loads(data_str)
-                        choices = data_json.get("choices", [])
-                        if choices:
-                            delta = choices[0].get("delta", {})
-                            content = delta.get("content", "")
-                            if content:
-                                full_content += content
-                                yield {"type": "chunk", "content": content}
-                    except json.JSONDecodeError:
-                        logger.warning(f"Failed to parse SSE data: {data_str}")
+                        
+                    content = chunk.choices[0].delta.content or ""
+                    if content:
+                        full_content += content
+                        yield {"type": "chunk", "content": content}
+                        
+            else:
+                client = get_client()
+                async for line in client.stream_post("/v1/chat/completions", json=payload):
+                    if self.active_streams.get(conversation_id, False):
+                        logger.info(f"Stream cancelled for conversation {conversation_id}")
+                        yield {"type": "error", "message": "Generation stopped"}
+                        break
+    
+                    line = line.strip()
+                    if not line:
                         continue
+                        
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        if data_str.strip() == "[DONE]":
+                            break
+                        try:
+                            data_json = json.loads(data_str)
+                            choices = data_json.get("choices", [])
+                            if choices:
+                                delta = choices[0].get("delta", {})
+                                content = delta.get("content", "")
+                                if content:
+                                    full_content += content
+                                    yield {"type": "chunk", "content": content}
+                        except json.JSONDecodeError:
+                            logger.warning(f"Failed to parse SSE data: {data_str}")
+                            continue
                             
             if full_content:
                 await self.add_message(conversation_id, "assistant", full_content, model=model)
