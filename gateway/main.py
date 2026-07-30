@@ -21,6 +21,7 @@ from services.gateway_core import gateway_core
 from services.model_manager import model_manager
 from services.pairing_manager import pairing_manager
 from services.qr_generator import generate_qr_ascii
+from services.mdns_broadcaster import mdns_broadcaster
 from routes.health import router as health_router
 from routes.models import router as models_router
 from routes.pair import router as pair_router
@@ -78,6 +79,9 @@ async def lifespan(app: FastAPI):
     # Start gateway core (LM Studio detection + retry loop)
     await gateway_core.startup()
     
+    # Start mDNS Broadcaster
+    mdns_broadcaster.start()
+    
     # Fetch models if connected
     model_count = 0
     if gateway_core.is_connected:
@@ -94,6 +98,7 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("Shutting down Maat Gateway...")
+    mdns_broadcaster.stop()
     await gateway_core.shutdown()
     await close_client()
     logger.info("Maat Gateway shut down.")
