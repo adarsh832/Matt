@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:mobile/theme/app_theme.dart';
 import 'package:mobile/providers/app_providers.dart';
+import 'package:mobile/services/mdns_service.dart';
 
 class QrConnectionScreen extends ConsumerStatefulWidget {
   const QrConnectionScreen({super.key});
@@ -14,6 +15,32 @@ class QrConnectionScreen extends ConsumerStatefulWidget {
 
 class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
   bool _isProcessing = false;
+  String _statusMessage = "Searching for Gateway on Local Network...";
+  final MdnsService _mdnsService = MdnsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _mdnsService.onGatewayFound = _onGatewayFound;
+    _mdnsService.start();
+  }
+
+  @override
+  void dispose() {
+    _mdnsService.stop();
+    super.dispose();
+  }
+
+  void _onGatewayFound(String server, String deviceName, String pairingToken) async {
+    if (_isProcessing) return;
+    if (mounted) {
+      setState(() {
+        _isProcessing = true;
+        _statusMessage = "Pairing with $deviceName...";
+      });
+    }
+    await _pairWithGateway(server, deviceName, pairingToken);
+  }
 
   void _onDetect(BarcodeCapture capture) async {
     if (_isProcessing) return;
@@ -24,9 +51,12 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
     final barcodeValue = barcodes.first.rawValue;
     if (barcodeValue == null) return;
     
-    setState(() {
-      _isProcessing = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isProcessing = true;
+        _statusMessage = "Pairing via QR Code...";
+      });
+    }
 
     try {
       final data = jsonDecode(barcodeValue);
@@ -35,28 +65,7 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
       final pairingToken = data['pairing_token'];
 
       if (server != null && deviceName != null && pairingToken != null) {
-        final apiService = ref.read(apiServiceProvider);
-        final storageService = ref.read(storageServiceProvider);
-        
-        if (apiService != null && storageService != null) {
-          final deviceId = await apiService.pairDevice(server, deviceName, pairingToken);
-          
-          if (deviceId != null) {
-            await storageService.saveServerUrl(server);
-            await storageService.saveDeviceToken(deviceId); 
-            ref.read(connectionStateProvider.notifier).setConnected(true);
-            
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Successfully paired!')),
-              );
-              Navigator.of(context).pushReplacementNamed('/chat');
-            }
-            return; // Stop processing and don't reset the flag
-          } else {
-            throw Exception('Pairing failed, invalid device ID returned.');
-          }
-        }
+        await _pairWithGateway(server, deviceName, pairingToken);
       } else {
         throw Exception('Invalid QR code format.');
       }
@@ -67,6 +76,46 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
         );
         setState(() {
           _isProcessing = false;
+          _statusMessage = "Searching for Gateway on Local Network...";
+        });
+      }
+    }
+  }
+
+  Future<void> _pairWithGateway(String server, String deviceName, String pairingToken) async {
+    try {
+      final apiService = ref.read(apiServiceProvider);
+      final storageService = ref.read(storageServiceProvider);
+      
+      if (apiService != null && storageService != null) {
+        final deviceId = await apiService.pairDevice(server, deviceName, pairingToken);
+        
+        if (deviceId != null) {
+          await storageService.saveServerUrl(server);
+          await storageService.saveDeviceToken(deviceId); 
+          ref.read(connectionStateProvider.notifier).setConnected(true);
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Successfully paired!')),
+            );
+            Navigator.of(context).pushReplacementNamed('/chat');
+          }
+          return;
+        } else {
+          throw Exception('Pairing failed, invalid device ID returned.');
+        }
+      } else {
+        throw Exception('API service is null!');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+        setState(() {
+          _isProcessing = false;
+          _statusMessage = "Searching for Gateway on Local Network...";
         });
       }
     }
@@ -120,9 +169,19 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+            Text(
+              _statusMessage,
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
             const Text(
-              "Scan the QR code displayed on your laptop.",
+              "Or scan the QR code displayed on your laptop.",
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,

@@ -1,8 +1,11 @@
 """Maat Gateway — mDNS Broadcaster Service."""
 
 import socket
-from zeroconf import ServiceInfo, Zeroconf
+from zeroconf import ServiceInfo
+from zeroconf.asyncio import AsyncZeroconf
 from config import GATEWAY_PORT, DEVICE_NAME, APP_VERSION
+from services.pairing_manager import pairing_manager
+import traceback
 
 from utils.logger import get_logger
 
@@ -10,7 +13,7 @@ logger = get_logger("mdns")
 
 class MDNSBroadcaster:
     def __init__(self):
-        self.zeroconf = None
+        self.aio_zeroconf = None
         self.info = None
 
     def _get_local_ip(self):
@@ -26,7 +29,7 @@ class MDNSBroadcaster:
             s.close()
         return IP
 
-    def start(self):
+    async def start(self):
         """Start the mDNS broadcast."""
         ip = self._get_local_ip()
         logger.info(f"Starting mDNS broadcast on IP: {ip}")
@@ -38,9 +41,14 @@ class MDNSBroadcaster:
         # We can add properties to let the mobile app know the version or other info
         properties = {
             "version": APP_VERSION,
-            "device": DEVICE_NAME
+            "device": DEVICE_NAME,
+            "pairing_token": pairing_manager.current_token,
+            "ip": ip
         }
 
+        # Server name cannot have spaces
+        safe_device_name = DEVICE_NAME.replace(" ", "-").replace("_", "-")
+        
         try:
             self.info = ServiceInfo(
                 service_type,
@@ -48,21 +56,22 @@ class MDNSBroadcaster:
                 addresses=[socket.inet_aton(ip)],
                 port=GATEWAY_PORT,
                 properties=properties,
-                server=f"{DEVICE_NAME}.local.",
+                server=f"{safe_device_name}.local.",
             )
-            self.zeroconf = Zeroconf()
-            self.zeroconf.register_service(self.info)
+            self.aio_zeroconf = AsyncZeroconf()
+            await self.aio_zeroconf.async_register_service(self.info)
             logger.info(f"Registered mDNS service: {service_name}")
         except Exception as e:
             logger.error(f"Failed to start mDNS broadcaster: {e}")
+            logger.error(traceback.format_exc())
 
-    def stop(self):
+    async def stop(self):
         """Stop the mDNS broadcast."""
-        if self.zeroconf and self.info:
+        if self.aio_zeroconf and self.info:
             logger.info("Stopping mDNS broadcast...")
             try:
-                self.zeroconf.unregister_service(self.info)
-                self.zeroconf.close()
+                await self.aio_zeroconf.async_unregister_service(self.info)
+                await self.aio_zeroconf.async_close()
                 logger.info("mDNS service unregistered.")
             except Exception as e:
                 logger.error(f"Error stopping mDNS broadcaster: {e}")

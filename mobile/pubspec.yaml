@@ -43,6 +43,7 @@ dependencies:
   flutter_markdown: ^0.7.7+1
   url_launcher: ^6.3.2
   markdown: ^7.3.1
+  nsd: ^5.0.1
 
 dev_dependencies:
   flutter_test:
