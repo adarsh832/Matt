@@ -5,3 +5,4 @@ qrcode[pil]>=7.4
 aiosqlite>=0.20.0
 python-dotenv>=1.0.0
 litellm>=1.40.0
+zeroconf>=0.131.0
