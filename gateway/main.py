@@ -80,7 +80,7 @@ async def lifespan(app: FastAPI):
     await gateway_core.startup()
     
     # Start mDNS Broadcaster
-    mdns_broadcaster.start()
+    await mdns_broadcaster.start()
     
     # Fetch models if connected
     model_count = 0
@@ -98,7 +98,7 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("Shutting down Maat Gateway...")
-    mdns_broadcaster.stop()
+    await mdns_broadcaster.stop()
     await gateway_core.shutdown()
     await close_client()
     logger.info("Maat Gateway shut down.")
