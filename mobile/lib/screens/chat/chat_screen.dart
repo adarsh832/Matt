@@ -79,7 +79,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            _buildTopBar(context),
+            _buildTopBar(context, chatState),
             Expanded(
               child: messages.isEmpty && !isGenerating
                   ? _buildGreeting()
@@ -166,7 +166,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildTopBar(BuildContext context) {
+  Widget _buildTopBar(BuildContext context, ChatState chatState) {
     final personality = ref.watch(personalityProvider);
     final displayPersonality = _getDisplayName(personality);
 
@@ -179,15 +179,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.menu, color: AppColors.textSecondary),
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.menu, color: AppColors.textSecondary),
+            onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
           Expanded(
             child: Text(
@@ -201,6 +197,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 fontStyle: FontStyle.italic,
                 color: AppColors.textPrimary,
               ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              _showDeleteChatConfirmation(context, chatState);
+            },
+            icon: const Icon(
+              Icons.delete_outline_rounded,
+              color: AppColors.deleteColor,
             ),
           ),
           IconButton(
@@ -492,4 +497,59 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
     );
   }
+
+  void _showDeleteChatConfirmation(BuildContext context, ChatState chatState){
+    showAdaptiveDialog(
+      context: context, 
+      builder: (context){
+        return AlertDialog.adaptive(
+          title: Text(
+            "Are you sure you want to delete this conversation?"
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: ()=> Navigator.pop(context), 
+              child: Text("No")
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                if(chatState.conversation == null){
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("No chat selected")
+                    )
+                  );
+                }
+                else{
+                  final convId = chatState.conversation!.id;
+                  final res = await ref.read(conversationsProvider.notifier).deleteConversation(convId);
+                  if(res && context.mounted){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("Chat deleted successfully")
+                      )
+                    );
+                  }
+                  else if(context.mounted){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("Chat did not delete")
+                      )
+                    );
+                  }
+                }
+              }, 
+              child: const Text("Yes",
+                style: TextStyle(
+                  color: AppColors.deleteColor
+                ),
+              )
+            )
+          ],
+        );
+      }
+    );
+  }
+
 }
