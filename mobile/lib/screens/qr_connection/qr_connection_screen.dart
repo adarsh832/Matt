@@ -121,6 +121,75 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
     }
   }
 
+  void _showManualConnectionDialog() {
+    final TextEditingController urlController = TextEditingController(text: 'http://10.0.2.2:8080');
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.cardBackground,
+          title: const Text('Manual Connection', style: TextStyle(color: AppColors.textPrimary)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: urlController,
+                decoration: const InputDecoration(
+                  labelText: 'Server URL',
+                  labelStyle: TextStyle(color: AppColors.textSecondary),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                ),
+                style: const TextStyle(color: AppColors.textPrimary),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                String server = urlController.text.trim();
+                
+                setState(() {
+                    _isProcessing = true;
+                    _statusMessage = "Fetching pairing token...";
+                  });
+                  final apiService = ref.read(apiServiceProvider);
+                  final fetchedToken = await apiService.getPairingToken(server);
+                  String token = '';
+                  if (fetchedToken != null && fetchedToken.isNotEmpty) {
+                    token = fetchedToken;
+                  } else {
+                    setState(() {
+                      _isProcessing = false;
+                      _statusMessage = "Failed to fetch token.";
+                    });
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error: Could not retrieve pairing token automatically.')),
+                    );
+                    return;
+                  }
+                
+                _pairWithGateway(server, "Emulator", token);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+              ),
+              child: const Text('Connect', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,6 +281,15 @@ class _QrConnectionScreenState extends ConsumerState<QrConnectionScreen> {
                   color: AppColors.textSecondary,
                 ),
               ],
+            ),
+            const SizedBox(height: 32),
+            TextButton.icon(
+              onPressed: _showManualConnectionDialog,
+              icon: const Icon(Icons.developer_mode, color: AppColors.primary),
+              label: const Text(
+                "Developer Mode: Manual Connection",
+                style: TextStyle(color: AppColors.primary),
+              ),
             ),
             const Spacer(flex: 3),
           ],
