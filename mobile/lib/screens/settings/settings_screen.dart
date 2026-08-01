@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                     SettingsRow(
                       icon: Icons.face,
                       title: 'AI Personality',
-                      subtitle: 'Change how Matt acts',
+                      subtitle: 'Change how Maat acts',
                       onTap: () {
                         Navigator.pushNamed(context, '/personality');
                       },
@@ -133,12 +133,12 @@ class SettingsScreen extends ConsumerWidget {
                       onTap: () {
                         showAboutDialog(
                           context: context,
-                          applicationName: 'Matt AI',
+                          applicationName: 'Maat AI',
                           applicationVersion: '1.0.0',
                           applicationIcon: const Icon(Icons.smart_toy, size: 48, color: AppColors.primary),
                           children: [
                             const Text(
-                              'Matt is a personal AI assistant built with Flutter and Python. '
+                              'Maat is a personal AI assistant built with Flutter and Python. '
                               'It securely pairs with a local backend to provide private, fast AI completions '
                               'using LM Studio running on your own hardware.'
                             ),

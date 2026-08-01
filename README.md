@@ -1,4 +1,4 @@
-# Matt 📱🤖
+# Maat 📱🤖
 
 [![Documentation](https://img.shields.io/badge/docs-website-blue.svg)](https://adarsh832.github.io/Matt/)
 [![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)

@@ -66,7 +66,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Matt',
+                  'Maat',
                   style: TextStyle(
                     fontFamily: 'Serif',
                     fontSize: 48,
