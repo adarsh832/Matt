@@ -15,6 +15,7 @@ class AppColors {
   static const Color connectedGreen = Color(0xFF4CAF50); // Status green dot
   static const Color inputBackground = Color(0xFFF0EDE8); // Input field bg
   static const Color cardShadow = Color(0x1A000000); // Minimal shadow
+  static const Color deleteColor = Colors.red; //Trash icon color
 }
 
 /// App-wide theme configuration using Material 3.
