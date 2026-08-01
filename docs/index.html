@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Matt — Local LLM Mobile Companion | Documentation</title>
-  <meta name="description" content="Matt is a free, open-source mobile app that lets you chat with your locally hosted LLMs (via LM Studio) from anywhere on your home network. 100% private, zero cloud." />
-  <meta name="keywords" content="Matt, LLM, local AI, LM Studio, mobile companion, open source, Flutter, Python, FastAPI" />
+  <title>Maat — Local LLM Mobile Companion | Documentation</title>
+  <meta name="description" content="Maat is a free, open-source mobile app that lets you chat with your locally hosted LLMs (via LM Studio) from anywhere on your home network. 100% private, zero cloud." />
+  <meta name="keywords" content="Maat, LLM, local AI, LM Studio, mobile companion, open source, Flutter, Python, FastAPI" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400&display=swap" rel="stylesheet" />
@@ -22,7 +22,7 @@
         <button class="hamburger-btn" aria-label="Open navigation menu">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <a href="#top" class="logo">Matt</a>
+        <a href="#top" class="logo">Maat</a>
         <span class="badge">v0.1.0</span>
       </div>
       <div class="header-center">
@@ -47,7 +47,7 @@
   <div class="mobile-nav-overlay" id="mobileNav">
     <div class="mobile-nav-drawer">
       <div class="mobile-nav-header">
-        <span class="logo">Matt</span>
+        <span class="logo">Maat</span>
         <button class="mobile-nav-close" aria-label="Close navigation">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -151,12 +151,12 @@
 
       <!-- ══════════ INTRODUCTION ══════════ -->
       <section id="introduction" class="doc-section">
-        <h1>Matt Documentation</h1>
+        <h1>Maat Documentation</h1>
         <p class="lead">
-          <strong>Matt</strong> is a free, open-source mobile application that lets you chat securely with your locally hosted Large Language Models — via <a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a> — from anywhere on your home network.
+          <strong>Maat</strong> is a free, open-source mobile application that lets you chat securely with your locally hosted Large Language Models — via <a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a> — from anywhere on your home network.
         </p>
         <p>
-          By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile client, Matt ensures that all inference runs on your own hardware. Your chats remain 100% private, with zero data sent to the cloud. Setup takes less than a minute via a simple QR code scan.
+          By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile client, Maat ensures that all inference runs on your own hardware. Your chats remain 100% private, with zero data sent to the cloud. Setup takes less than a minute via a simple QR code scan.
         </p>
 
         <div class="callout callout-tip">
@@ -222,7 +222,7 @@
       <!-- ══════════ ARCHITECTURE ══════════ -->
       <section id="architecture" class="doc-section">
         <h2>Architecture</h2>
-        <p>Matt is split into two main components that communicate over your local Wi-Fi network:</p>
+        <p>Maat is split into two main components that communicate over your local Wi-Fi network:</p>
 
         <div class="architecture-diagram">
           <div class="arch-box">
@@ -263,7 +263,7 @@
       <!-- ══════════ PREREQUISITES ══════════ -->
       <section id="prerequisites" class="doc-section">
         <h2>Prerequisites</h2>
-        <p>Before setting up Matt, ensure you have the following installed on your system:</p>
+        <p>Before setting up Maat, ensure you have the following installed on your system:</p>
         <div class="prereq-list">
           <div class="prereq-item">
             <div class="prereq-check">
@@ -303,7 +303,7 @@
       <!-- ══════════ QUICK START ══════════ -->
       <section id="quick-start" class="doc-section">
         <h2>Quick Start</h2>
-        <p>Get Matt running in under a minute with these two steps.</p>
+        <p>Get Maat running in under a minute with these two steps.</p>
 
         <!-- OS Tabs -->
         <div class="os-tabs-container">
@@ -389,13 +389,13 @@ flutter run</code></pre></div>
           </div>
         </div>
 
-        <p>A QR code will appear in your terminal. Open the Matt app and scan it to pair. That's it!</p>
+        <p>A QR code will appear in your terminal. Open the Maat app and scan it to pair. That's it!</p>
       </section>
 
       <!-- ══════════ PAIRING GUIDE ══════════ -->
       <section id="pairing" class="doc-section">
         <h2>Pairing Guide</h2>
-        <p>Matt uses a QR-code based pairing system to securely connect your mobile device to the gateway without manual IP configuration.</p>
+        <p>Maat uses a QR-code based pairing system to securely connect your mobile device to the gateway without manual IP configuration.</p>
 
         <div class="stepper">
           <div class="step active" data-step="1">
@@ -424,7 +424,7 @@ flutter run</code></pre></div>
             </div>
             <div class="step-content">
               <h3 class="step-title">Scan with the Mobile App</h3>
-              <p>Open the Matt app on your phone. It will launch the QR scanner automatically. Point your camera at the terminal QR code. The app will decode the server URL and pairing token, register itself with the gateway, and navigate you straight to the chat screen.</p>
+              <p>Open the Maat app on your phone. It will launch the QR scanner automatically. Point your camera at the terminal QR code. The app will decode the server URL and pairing token, register itself with the gateway, and navigate you straight to the chat screen.</p>
             </div>
           </div>
         </div>
@@ -475,7 +475,7 @@ flutter run</code></pre></div>
       <section id="api-overview" class="doc-section">
         <h2>Gateway API Overview</h2>
         <p>
-          The Matt Gateway exposes a RESTful API built with <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener">FastAPI</a>. All endpoints (except <code>/health</code> and <code>/pair</code>) require a valid <code>X-Device-Token</code> header obtained through the pairing process.
+          The Maat Gateway exposes a RESTful API built with <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener">FastAPI</a>. All endpoints (except <code>/health</code> and <code>/pair</code>) require a valid <code>X-Device-Token</code> header obtained through the pairing process.
         </p>
         <p>The default base URL is <code>http://&lt;your-pc-ip&gt;:8080</code>.</p>
 
@@ -883,7 +883,7 @@ flutter build apk --release</code></pre></div>
       <!-- ══════════ CONTRIBUTING ══════════ -->
       <section id="contributing" class="doc-section">
         <h2>How to Contribute</h2>
-        <p>We are building Matt in public and are actively looking for contributors! Whether you are a student looking for resume experience, a Flutter developer, or a Python backend engineer, we want your help.</p>
+        <p>We are building Maat in public and are actively looking for contributors! Whether you are a student looking for resume experience, a Flutter developer, or a Python backend engineer, we want your help.</p>
 
         <div class="stepper stepper-compact">
           <div class="step completed" data-step="1">
@@ -921,7 +921,7 @@ flutter build apk --release</code></pre></div>
       <!-- ══════════ ROADMAP ══════════ -->
       <section id="roadmap" class="doc-section">
         <h2>Roadmap</h2>
-        <p>Matt is currently at <strong>Version 0.1 MVP</strong>. Here's what's planned for future releases:</p>
+        <p>Maat is currently at <strong>Version 0.1 MVP</strong>. Here's what's planned for future releases:</p>
 
         <div class="roadmap-list">
           <div class="roadmap-item roadmap-done">
@@ -982,7 +982,7 @@ flutter build apk --release</code></pre></div>
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-left">
-        <span class="logo">Matt</span>
+        <span class="logo">Maat</span>
         <span class="footer-tagline">Local LLM Mobile Companion</span>
       </div>
       <div class="footer-right">

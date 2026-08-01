@@ -29,7 +29,7 @@ class MattApp extends ConsumerWidget {
     // will be checked in the SplashScreen
 
     return MaterialApp(
-      title: 'Matt - Local AI',
+      title: 'Maat - Local AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       initialRoute: '/',
