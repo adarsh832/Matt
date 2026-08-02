@@ -156,7 +156,7 @@
           <strong>Maat</strong> is a free, open-source mobile application that lets you chat securely with your locally hosted Large Language Models — via <a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a> — from anywhere on your home network.
         </p>
         <p>
-          By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile client, Maat ensures that all inference runs on your own hardware. Your chats remain 100% private, with zero data sent to the cloud. Setup takes less than a minute via a simple QR code scan.
+          By utilizing a native desktop application (PyQt6 + FastAPI) on your PC and a fast Flutter mobile client, Maat ensures that all inference runs on your own hardware. Your chats remain 100% private, with zero data sent to the cloud. Setup takes less than a minute via a simple QR code scan.
         </p>
 
         <div class="callout callout-tip">
@@ -179,7 +179,7 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
             <h3 class="feature-title">Zero Configuration</h3>
-            <p class="feature-desc">Scan a QR code on your PC to instantly pair your mobile device. No IP addresses to type, no tokens to copy.</p>
+            <p class="feature-desc">Open the desktop app on your PC to instantly generate a pairing QR code for your mobile device. No IP addresses to type.</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
@@ -200,7 +200,7 @@
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </div>
             <h3 class="feature-title">Model Switching</h3>
-            <p class="feature-desc">Easily switch between the models you have installed in LM Studio — Qwen, Llama, Gemma, and more.</p>
+            <p class="feature-desc">Easily switch between local models in LM Studio and remote Cloud LLMs (OpenAI, Gemini, Anthropic).</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
@@ -236,8 +236,8 @@
           </div>
           <div class="arch-box">
             <div class="arch-box-icon">🖥️</div>
-            <div class="arch-box-label">Python Gateway</div>
-            <div class="arch-box-tech">FastAPI / Uvicorn</div>
+            <div class="arch-box-label">Desktop Gateway</div>
+            <div class="arch-box-tech">PyQt6 / FastAPI</div>
           </div>
           <div class="arch-connector">
             <div class="arch-connector-line"></div>
@@ -314,7 +314,7 @@
           </div>
 
           <div class="os-tab-content active" data-os="windows">
-            <h3>Step 1 — Run the Python Gateway</h3>
+            <h3>Step 1 — Run the Desktop Gateway</h3>
             <div class="code-wrapper">
               <div class="code-header">
                 <span>PowerShell</span>
@@ -339,7 +339,7 @@ flutter run</code></pre></div>
           </div>
 
           <div class="os-tab-content" data-os="macos">
-            <h3>Step 1 — Run the Python Gateway</h3>
+            <h3>Step 1 — Run the Desktop Gateway</h3>
             <div class="code-wrapper">
               <div class="code-header">
                 <span>Terminal</span>
@@ -364,7 +364,7 @@ flutter run</code></pre></div>
           </div>
 
           <div class="os-tab-content" data-os="linux">
-            <h3>Step 1 — Run the Python Gateway</h3>
+            <h3>Step 1 — Run the Desktop Gateway</h3>
             <div class="code-wrapper">
               <div class="code-header">
                 <span>Bash</span>
@@ -389,7 +389,7 @@ flutter run</code></pre></div>
           </div>
         </div>
 
-        <p>A QR code will appear in your terminal. Open the Maat app and scan it to pair. That's it!</p>
+        <p>A native desktop window will open displaying your pairing QR code. Open the Maat app and scan it to pair. That's it!</p>
       </section>
 
       <!-- ══════════ PAIRING GUIDE ══════════ -->
@@ -414,8 +414,8 @@ flutter run</code></pre></div>
               <div class="step-line"></div>
             </div>
             <div class="step-content">
-              <h3 class="step-title">Run the Python Gateway</h3>
-              <p>In your terminal, navigate to the <code>gateway/</code> directory and run <code>python main.py</code>. The gateway will auto-detect LM Studio and print a QR code containing your local IP address and a one-time pairing token.</p>
+              <h3 class="step-title">Run the Desktop Gateway</h3>
+              <p>In your terminal, navigate to the <code>gateway/</code> directory and run <code>python main.py</code>. The desktop app will launch and display a QR code containing your local IP address and a one-time pairing token.</p>
             </div>
           </div>
           <div class="step" data-step="3">
@@ -424,7 +424,7 @@ flutter run</code></pre></div>
             </div>
             <div class="step-content">
               <h3 class="step-title">Scan with the Mobile App</h3>
-              <p>Open the Maat app on your phone. It will launch the QR scanner automatically. Point your camera at the terminal QR code. The app will decode the server URL and pairing token, register itself with the gateway, and navigate you straight to the chat screen.</p>
+              <p>Open the Maat app on your phone. It will launch the QR scanner automatically. Point your camera at the desktop QR code. The app will decode the server URL and pairing token, register itself with the gateway, and navigate you straight to the chat screen.</p>
             </div>
           </div>
         </div>

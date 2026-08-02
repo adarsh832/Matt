@@ -187,6 +187,11 @@ def main() -> None:
         default=LMSTUDIO_BASE_URL,
         help=f"LM Studio API URL (default: {LMSTUDIO_BASE_URL})"
     )
+    parser.add_argument(
+        "--no-tray",
+        action="store_true",
+        help="Disable the system tray icon (fallback to terminal-only mode)"
+    )
     
     args = parser.parse_args()
     
@@ -196,15 +201,43 @@ def main() -> None:
     config.GATEWAY_HOST = args.host
     config.LMSTUDIO_BASE_URL = args.lmstudio_url
     
-    prompt_for_api_keys()
+    # Check if we should use GUI
+    use_gui = not args.no_tray
     
-    uvicorn.run(
-        "main:app",
-        host=args.host,
-        port=args.port,
-        reload=False,
-        log_level="info"
-    )
+    if use_gui:
+        try:
+            import sys
+            from PyQt6.QtWidgets import QApplication
+            from gui import GatewayDashboard
+            
+            app = QApplication(sys.argv)
+            app.setQuitOnLastWindowClosed(False) # Keep running when window is closed (tray icon)
+            
+            dashboard = GatewayDashboard(args.host, args.port, args.lmstudio_url)
+            dashboard.show()
+            
+            sys.exit(app.exec())
+        except ImportError as e:
+            logger.error(f"Failed to start GUI (missing dependencies?): {e}")
+            logger.info("Falling back to terminal-only mode...")
+            use_gui = False
+        except Exception as e:
+            logger.error(f"Failed to start GUI: {e}")
+            logger.info("Falling back to terminal-only mode...")
+            use_gui = False
+            
+    if not use_gui:
+        prompt_for_api_keys()
+        
+        uv_config = uvicorn.Config(
+            "main:app",
+            host=args.host,
+            port=args.port,
+            reload=False,
+            log_level="info"
+        )
+        server = uvicorn.Server(uv_config)
+        server.run()
 
 
 if __name__ == "__main__":

@@ -14,10 +14,11 @@ By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile c
 
 ## ✨ Features (Version 0.1 MVP)
 
-- **Zero Configuration:** Scan a QR code on your PC to instantly pair your mobile device.
-- **100% Local & Private:** No cloud servers. All communication happens over your home Wi-Fi.
+- **Zero Configuration:** Open the desktop app on your PC to instantly generate a pairing QR code for your mobile device.
+- **100% Local & Private:** No cloud servers required for local models. All communication happens over your home Wi-Fi.
+- **Cloud LLM Support:** Easily configure API keys (OpenAI, Gemini, Anthropic) directly within the desktop application.
 - **Real-time Streaming:** Watch the AI generate responses on your phone in real-time, just like on your desktop.
-- **Model Switching:** Easily switch between the models you have installed in LM Studio.
+- **Model Switching:** Easily switch between local models in LM Studio and remote Cloud LLMs.
 - **Custom Personalities:** Choose from predefined roles or inject your own custom system prompts.
 - **Rich Markdown:** Code blocks, bolding, and italics are rendered beautifully in the chat.
 - **Local Chat History:** All conversations are saved securely on your device.
@@ -28,22 +29,19 @@ By utilizing a lightweight Python gateway on your PC and a fast Flutter mobile c
 
 The project is split into two main components:
 
-1. **Python Gateway (`/gateway`)**: A lightweight FastAPI server that runs on your PC. It automatically detects LM Studio, exposes a secure REST API for the mobile app, handles streaming responses, and generates the pairing QR code.
-2. **Mobile Application (`/mobile`)**: A Flutter application (Android/iOS) that acts as the client. It scans the QR code, pairs with the gateway, and provides a beautiful, native chat interface.
+1. **Python Gateway (`/gateway`)**: A native desktop application (built with PyQt6 and FastAPI) that runs on your PC. It automatically detects LM Studio, exposes a secure REST API for the mobile app, handles streaming responses, displays the pairing QR code in a beautiful GUI, and minimizes to the system tray for background operation.
+2. **Mobile Application (`/mobile`)**: A Flutter application (Android/iOS) that acts as the client. It scans the QR code, pairs with the desktop gateway, and provides a beautiful, native chat interface.
 
 ```text
 Mobile App (Flutter)
      │
      │ HTTP/WebSocket
      ▼
-Python Gateway (FastAPI)
+Desktop Gateway (PyQt6 + FastAPI)
      │
-     │ Local API
-     ▼
-LM Studio 
+     ├────── Local API ──────► LM Studio (Local LLMs)
      │
-     ▼
-Local LLM (Qwen, Llama, etc.)
+     └────── Internet ───────► Cloud LLMs (OpenAI, Gemini, Anthropic)
 ```
 
 ---
@@ -60,14 +58,14 @@ Don't want to build from source? You can download the latest pre-compiled Androi
 - Python 3.12+ installed.
 - [Flutter SDK](https://flutter.dev/docs/get-started/install) installed.
 
-### 1. Run the Python Gateway
+### 1. Run the Desktop Gateway
 ```bash
 cd gateway
 # We recommend setting up a python virtual environment here
 pip install -r requirements.txt
 python main.py
 ```
-*A QR code will be generated in your terminal.*
+*A native desktop window will open displaying your server status, a pairing QR code, and settings to manage API keys. You can minimize it to the system tray to keep it running in the background.*
 
 ### 2. Run the Mobile App
 ```bash
