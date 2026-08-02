@@ -18,7 +18,7 @@ class GatewayCore:
     def __init__(self) -> None:
         self.is_connected: bool = False
         self._retry_task: Optional[asyncio.Task[Any]] = None
-        self._shutdown_event: asyncio.Event = asyncio.Event()
+        self._shutdown: bool = False
 
     async def detect_lmstudio(self) -> bool:
         """Tries GET to LM Studio /v1/models endpoint to detect if it's running."""
@@ -31,7 +31,7 @@ class GatewayCore:
 
     async def _retry_loop(self) -> None:
         """Background task that retries connection every LMSTUDIO_RETRY_INTERVAL seconds."""
-        while not self._shutdown_event.is_set():
+        while not self._shutdown:
             connected = await self.detect_lmstudio()
             
             if connected and not self.is_connected:
@@ -42,16 +42,18 @@ class GatewayCore:
                 self.is_connected = False
             
             try:
-                await asyncio.wait_for(self._shutdown_event.wait(), timeout=float(LMSTUDIO_RETRY_INTERVAL))
-            except asyncio.TimeoutError:
-                pass
-            except Exception as e:
-                logger.error(f"Error in retry loop: {e}")
+                # Sleep in small chunks to allow quick shutdown
+                for _ in range(int(float(LMSTUDIO_RETRY_INTERVAL) * 10)):
+                    if self._shutdown:
+                        break
+                    await asyncio.sleep(0.1)
+            except asyncio.CancelledError:
+                break
 
     async def startup(self) -> None:
         """Initialize and start the background retry loop."""
         logger.info("Starting GatewayCore lifecycle.")
-        self._shutdown_event.clear()
+        self._shutdown = False
         
         self.is_connected = await self.detect_lmstudio()
         if self.is_connected:
@@ -64,7 +66,7 @@ class GatewayCore:
     async def shutdown(self) -> None:
         """Signal background task to stop and wait for it."""
         logger.info("Shutting down GatewayCore lifecycle.")
-        self._shutdown_event.set()
+        self._shutdown = True
         
         if self._retry_task:
             try:

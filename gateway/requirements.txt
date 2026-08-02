@@ -6,3 +6,4 @@ aiosqlite>=0.20.0
 python-dotenv>=1.0.0
 litellm>=1.40.0
 zeroconf>=0.131.0
+PyQt6>=6.4.0
