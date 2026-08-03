@@ -19,6 +19,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _showScrollToBottom = false;
 
   @override
   void initState() {
@@ -53,6 +54,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatProvider);
@@ -60,9 +71,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final isGenerating = chatState.isGenerating;
 
     ref.listen(chatProvider, (previous, next) {
-      // If we got a new chunk or a new message, scroll to bottom
+      // If we got a new chunk or a new message, scroll to bottom if user is already at bottom
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
+        if (_scrollController.hasClients && !_showScrollToBottom) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
             duration: const Duration(milliseconds: 100),
@@ -83,33 +94,69 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Expanded(
               child: messages.isEmpty && !isGenerating
                   ? _buildGreeting()
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: messages.length + (isGenerating ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == messages.length) {
-                          return _buildTypingIndicator();
-                        }
-                        
-                        final msg = messages[index];
-                        final isUser = msg.role == 'user';
-                        final timeString = DateFormat('h:mm a').format(msg.createdAt);
-                        
-                        // Skip empty assistant messages (they appear when generation starts)
-                        if (!isUser && msg.content.isEmpty && isGenerating) {
-                           return const SizedBox.shrink(); 
-                        }
-                        
-                        final aiName = _getDisplayName(ref.read(personalityProvider));
+                  : Stack(
+                      children: [
+                        NotificationListener<ScrollNotification>(
+                          onNotification: (ScrollNotification notification) {
+                            if (_scrollController.hasClients) {
+                              final isAtBottom = _scrollController.position.maxScrollExtent - _scrollController.position.pixels <= 50;
+                              
+                              if (notification is ScrollUpdateNotification) {
+                                // If user is dragging list up (away from bottom)
+                                if (notification.dragDetails != null && !isAtBottom && !_showScrollToBottom) {
+                                  setState(() => _showScrollToBottom = true);
+                                }
+                              }
+                              
+                              // Automatically hide button when reaching bottom
+                              if (isAtBottom && _showScrollToBottom) {
+                                setState(() => _showScrollToBottom = false);
+                              }
+                            }
+                            return false;
+                          },
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: messages.length + (isGenerating ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (index == messages.length) {
+                                return _buildTypingIndicator();
+                              }
+                              
+                              final msg = messages[index];
+                              final isUser = msg.role == 'user';
+                              final timeString = DateFormat('h:mm a').format(msg.createdAt);
+                              
+                              // Skip empty assistant messages (they appear when generation starts)
+                              if (!isUser && msg.content.isEmpty && isGenerating) {
+                                 return const SizedBox.shrink(); 
+                              }
+                              
+                              final aiName = _getDisplayName(ref.read(personalityProvider));
 
-                        return ChatBubble(
-                          message: msg.content,
-                          isUser: isUser,
-                          timestamp: '${isUser ? "You" : aiName} $timeString',
-                        );
-                      },
+                              return ChatBubble(
+                                message: msg.content,
+                                isUser: isUser,
+                                timestamp: '${isUser ? "You" : aiName} $timeString',
+                              );
+                            },
+                          ),
+                        ),
+                        if (_showScrollToBottom)
+                          Positioned(
+                            bottom: 16,
+                            right: 16,
+                            child: FloatingActionButton(
+                              mini: true,
+                              onPressed: _scrollToBottom,
+                              backgroundColor: AppColors.primary,
+                              elevation: 4,
+                              child: const Icon(Icons.arrow_downward, color: AppColors.background),
+                            ),
+                          ),
+                      ],
                     ),
             ),
             _buildBottomInput(),
