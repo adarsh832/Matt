@@ -203,6 +203,15 @@ class ChatNotifier extends Notifier<ChatState> {
     state = ChatState(); // Resets to initial empty state
   }
 
+  Future<void> stopGenerating() async {
+    if (!state.isGenerating || state.conversation == null) return;
+    
+    final api = ref.read(apiServiceProvider);
+    if (api != null) {
+      await api.stopGeneration(state.conversation!.id);
+    }
+  }
+
   Future<void> loadConversation(String id) async {
     final api = ref.read(apiServiceProvider);
     if (api == null) return;

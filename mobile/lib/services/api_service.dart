@@ -164,6 +164,26 @@ class ApiService {
     }
   }
 
+  Future<bool> stopGeneration(String conversationId) async {
+    try {
+      final baseUrl = await _getServerUrl();
+      if (baseUrl == null) throw Exception('Server URL not set');
+
+      final uri = Uri.parse('$baseUrl/chat/stop');
+      final headers = await _getHeaders();
+
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode({'conversation_id': conversationId}),
+      ).timeout(const Duration(seconds: 10));
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Stream<Map<String, dynamic>> streamChat({
     String? conversationId,
     required String model,

@@ -159,7 +159,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ],
                     ),
             ),
-            _buildBottomInput(),
+            _buildBottomInput(isGenerating),
           ],
         ),
       ),
@@ -460,7 +460,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildBottomInput() {
+  Widget _buildBottomInput(bool isGenerating) {
     final isModelLoading = ref.watch(modelLoadingProvider);
 
     return Container(
@@ -516,15 +516,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ),
           const SizedBox(width: 10),
           GestureDetector(
-            onTap: isModelLoading ? null : _sendMessage,
+            onTap: isGenerating
+                ? () { ref.read(chatProvider.notifier).stopGenerating(); }
+                : (isModelLoading ? null : _sendMessage),
             child: Container(
               margin: const EdgeInsets.only(bottom: 2),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: isModelLoading ? AppColors.textTertiary : AppColors.textPrimary,
-                shape: BoxShape.circle,
+                color: isModelLoading && !isGenerating ? AppColors.textTertiary : AppColors.textPrimary,
+                shape: isGenerating ? BoxShape.rectangle : BoxShape.circle,
+                borderRadius: isGenerating ? BorderRadius.circular(8.0) : null,
               ),
-              child: isModelLoading 
+              child: isGenerating
+                ? const Icon(
+                    Icons.stop_rounded,
+                    color: AppColors.background,
+                    size: 20,
+                  )
+                : isModelLoading 
                 ? const SizedBox(
                     width: 20, 
                     height: 20, 
